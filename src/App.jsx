@@ -105,15 +105,15 @@ const SmallButton = ({ icon, text, onClick, disabled=false }) => (
 const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
   if (!images || images.length === 0) {
     return (
-      <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center">
-        <span className="text-gray-400 text-sm">No Image</span>
+      <div className="w-48 h-48 sm:w-56 sm:h-56 bg-gray-100 rounded-xl flex items-center justify-center">
+        <span className="text-gray-400 text-lg">No Image</span>
       </div>
     );
   }
 
   if (images.length === 1) {
     return (
-      <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+      <div className="w-48 h-48 sm:w-56 sm:h-56 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
         <img 
           src={`/images/${images[0]}`} 
           alt={`Bộ thủ hình ảnh`}
@@ -123,7 +123,7 @@ const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
             e.target.nextSibling.style.display = 'flex';
           }}
         />
-        <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm" style={{display: 'none'}}>
+        <div className="w-full h-full flex items-center justify-center text-gray-400 text-lg" style={{display: 'none'}}>
           No Image
         </div>
       </div>
@@ -139,7 +139,7 @@ const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
   };
 
   return (
-    <div className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
+    <div className="relative w-48 h-48 sm:w-56 sm:h-56 bg-gray-100 rounded-xl overflow-hidden">
       <img 
         src={`/images/${images[currentIndex]}`} 
         alt={`Bộ thủ hình ảnh ${currentIndex + 1}`}
@@ -149,7 +149,7 @@ const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
           e.target.nextSibling.style.display = 'flex';
         }}
       />
-      <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm" style={{display: 'none'}}>
+      <div className="w-full h-full flex items-center justify-center text-gray-400 text-lg" style={{display: 'none'}}>
         No Image
       </div>
       
@@ -157,21 +157,21 @@ const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
       <div className="absolute inset-0 flex items-center justify-between opacity-0 hover:opacity-100 transition-opacity">
         <button
           onClick={goToPrevImage}
-          className="w-6 h-6 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors"
+          className="w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors"
         >
-          <ArrowLeft size={12} />
+          <ArrowLeft size={16} />
         </button>
         <button
           onClick={goToNextImage}
-          className="w-6 h-6 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors"
+          className="w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors"
         >
-          <ArrowRight size={12} />
+          <ArrowRight size={16} />
         </button>
       </div>
       
       {/* Image counter */}
-      <div className="absolute bottom-1 right-1 bg-black/50 text-white text-xs px-1 rounded">
-        {currentIndex + 1}/{images.length}
+      <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+        {currentIndex + 1} / {images.length}
       </div>
     </div>
   );
@@ -383,21 +383,30 @@ export default function App() {
                     </div>
 
                      <div className="mt-6">
-                       <div className="flex items-center justify-center gap-6">
-                         <div className="text-emerald-700 text-5xl font-bold">{cur.boThu}</div>
+                       {/* Image as center focus */}
+                       <div className="flex justify-center mb-6">
                          <ImageCarousel 
                            images={cur.hinhAnh}
                            currentIndex={currentImageIndex}
                            onImageChange={setCurrentImageIndex}
                          />
                        </div>
-                       <div className="italic text-xl mt-3 text-gray-700">{cur.tenBoThu} • {cur.phienAm}</div>
-                       <div className="mt-6 text-lg">{cur.yNghia}</div>
-                       {formatGhepTu(cur.ghepTu) && (
-                         <div className="mt-4 text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
-                           {formatGhepTu(cur.ghepTu)}
-                         </div>
-                       )}
+                       
+                       {/* Radical character */}
+                       <div className="text-center mb-4">
+                         <div className="text-emerald-700 text-6xl font-bold">{cur.boThu}</div>
+                       </div>
+                       
+                       {/* Supporting information */}
+                       <div className="text-center">
+                         <div className="italic text-xl mb-4 text-gray-700">{cur.tenBoThu} • {cur.phienAm}</div>
+                         <div className="text-lg text-gray-600">{cur.yNghia}</div>
+                         {formatGhepTu(cur.ghepTu) && (
+                           <div className="mt-4 text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded-lg inline-block">
+                             {formatGhepTu(cur.ghepTu)}
+                           </div>
+                         )}
+                       </div>
                      </div>
 
                     <div className="mt-8 flex flex-wrap gap-2 sm:gap-3 justify-center">

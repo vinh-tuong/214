@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Play, Square, ChevronLeft, ChevronRight, ChevronsLeft, Volume2, Monitor } from "lucide-react";
+import { Play, Square, ChevronLeft, ChevronRight, ChevronsLeft, Volume2, Monitor, ArrowLeft, ArrowRight } from "lucide-react";
 import RADICALS from "../radicals";
 import { useSpeechSynthesis } from "./hooks/useSpeechSynthesis";
 import FlashcardModal from "./components/FlashcardModal";
@@ -10,10 +10,12 @@ import FlashcardModal from "./components/FlashcardModal";
  * Flashcards for 214 Chinese Radicals grouped by stroke count
  * -----------------------------------------------------------
  * Dataset schema per item:
- * { stt: number, boThu: string, tenBoThu: string, phienAm: string, yNghia: string, soNet: number }
+ * { stt: number, boThu: string, tenBoThu: string, phienAm: string, yNghia: string, soNet: number, hinhAnh: string[] }
  *
- * Full dataset (214 radicals) collected from ThanhMaiHSK:
- * https://thanhmaihsk.edu.vn/214-bo-thu-tieng-trung-thong-dung-y-nghia-va-cach-hoc-de-nho/
+ * Data sources:
+ * - Text and meanings: 214 bộ thủ tiếng Trung – ThanhMaiHSK
+ *   https://thanhmaihsk.edu.vn/214-bo-thu-tieng-trung-thong-dung-y-nghia-va-cach-hoc-de-nho/
+ * - Images: Radical Images — Pichinese
  */
 
 function groupByStroke(data) {
@@ -60,12 +62,88 @@ const SmallButton = ({ icon, text, onClick, disabled=false }) => (
   </Button>
 );
 
+const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
+  if (!images || images.length === 0) {
+    return (
+      <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center">
+        <span className="text-gray-400 text-sm">No Image</span>
+      </div>
+    );
+  }
+
+  if (images.length === 1) {
+    return (
+      <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+        <img 
+          src={`/images/${images[0]}`} 
+          alt={`Bộ thủ hình ảnh`}
+          className="w-full h-full object-contain"
+          onError={(e) => {
+            e.target.style.display = 'none';
+            e.target.nextSibling.style.display = 'flex';
+          }}
+        />
+        <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm" style={{display: 'none'}}>
+          No Image
+        </div>
+      </div>
+    );
+  }
+
+  const goToPrevImage = () => {
+    onImageChange((currentIndex - 1 + images.length) % images.length);
+  };
+
+  const goToNextImage = () => {
+    onImageChange((currentIndex + 1) % images.length);
+  };
+
+  return (
+    <div className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
+      <img 
+        src={`/images/${images[currentIndex]}`} 
+        alt={`Bộ thủ hình ảnh ${currentIndex + 1}`}
+        className="w-full h-full object-contain"
+        onError={(e) => {
+          e.target.style.display = 'none';
+          e.target.nextSibling.style.display = 'flex';
+        }}
+      />
+      <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm" style={{display: 'none'}}>
+        No Image
+      </div>
+      
+      {/* Navigation buttons */}
+      <div className="absolute inset-0 flex items-center justify-between opacity-0 hover:opacity-100 transition-opacity">
+        <button
+          onClick={goToPrevImage}
+          className="w-6 h-6 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors"
+        >
+          <ArrowLeft size={12} />
+        </button>
+        <button
+          onClick={goToNextImage}
+          className="w-6 h-6 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors"
+        >
+          <ArrowRight size={12} />
+        </button>
+      </div>
+      
+      {/* Image counter */}
+      <div className="absolute bottom-1 right-1 bg-black/50 text-white text-xs px-1 rounded">
+        {currentIndex + 1}/{images.length}
+      </div>
+    </div>
+  );
+};
+
 export default function App() {
   const [allData] = useState(RADICALS);
   const [stroke, setStroke] = useState(1);
   const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [difficultSet, setDifficultSet] = useState(() => {
     // Load from localStorage on initialization
     const saved = localStorage.getItem('difficultRadicals');
@@ -112,7 +190,15 @@ export default function App() {
   }, [playing, total]);
 
   // reset index when group changes
-  useEffect(() => { setIdx(0); }, [stroke]);
+  useEffect(() => { 
+    setIdx(0); 
+    setCurrentImageIndex(0);
+  }, [stroke]);
+
+  // reset image index when radical changes
+  useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [idx, stroke]);
 
   const goFirst = () => setIdx(0);
   const goPrev = () => setIdx((i) => (i - 1 + total) % total);
@@ -219,7 +305,7 @@ export default function App() {
               <p className="mt-2">Nút Audio sẽ đọc bộ thủ bằng tiếng Trung (hỗ trợ trình duyệt hiện đại).</p>
               <p className="mt-2"><strong>Popular:</strong> 50 bộ thủ phổ biến nhất trong tiếng Trung.</p>
               <p className="mt-2"><strong>Difficult:</strong> Nhóm bộ thủ bạn đánh dấu khó để ôn tập.</p>
-              <p className="mt-2">Nguồn dữ liệu: 214 bộ thủ tiếng Trung – ThanhMaiHSK.</p>
+              <p className="mt-2">Nguồn dữ liệu: từ và nghĩa được lấy từ 214 bộ thủ tiếng Trung – ThanhMaiHSK. Hình ảnh được lấy từ Radical Images — Pichinese.</p>
             </div>
           </aside>
 
@@ -236,16 +322,23 @@ export default function App() {
                       </label>
                     </div>
 
-                    <div className="mt-6">
-                      <div className="text-emerald-700 text-5xl font-bold">{cur.boThu}</div>
-                      <div className="italic text-xl mt-3 text-gray-700">{cur.tenBoThu} • {cur.phienAm}</div>
-                      <div className="mt-6 text-lg">{cur.yNghia}</div>
-                      {formatGhepTu(cur.ghepTu) && (
-                        <div className="mt-4 text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
-                          {formatGhepTu(cur.ghepTu)}
-                        </div>
-                      )}
-                    </div>
+                     <div className="mt-6">
+                       <div className="flex items-center justify-center gap-6">
+                         <div className="text-emerald-700 text-5xl font-bold">{cur.boThu}</div>
+                         <ImageCarousel 
+                           images={cur.hinhAnh}
+                           currentIndex={currentImageIndex}
+                           onImageChange={setCurrentImageIndex}
+                         />
+                       </div>
+                       <div className="italic text-xl mt-3 text-gray-700">{cur.tenBoThu} • {cur.phienAm}</div>
+                       <div className="mt-6 text-lg">{cur.yNghia}</div>
+                       {formatGhepTu(cur.ghepTu) && (
+                         <div className="mt-4 text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
+                           {formatGhepTu(cur.ghepTu)}
+                         </div>
+                       )}
+                     </div>
 
                     <div className="mt-8 flex gap-3 justify-center">
                       <Button variant={playing?"destructive":"default"} className="rounded-2xl" onClick={() => setPlaying(p=>!p)}>
@@ -321,6 +414,8 @@ export default function App() {
         onGoPrev={goPrev}
         onGoNext={goNext}
         allData={allData}
+        currentImageIndex={currentImageIndex}
+        onImageChange={setCurrentImageIndex}
       />
     </div>
   );

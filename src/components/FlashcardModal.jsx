@@ -1,13 +1,88 @@
 import React, { useEffect, useRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Play, Square, ChevronLeft, ChevronRight, ChevronsLeft, Volume2, X } from "lucide-react";
+import { Play, Square, ChevronLeft, ChevronRight, ChevronsLeft, Volume2, X, ArrowLeft, ArrowRight } from "lucide-react";
 
 const SmallButton = ({ icon, text, onClick, disabled=false }) => (
   <Button variant="outline" className="rounded-2xl px-5" onClick={onClick} disabled={disabled}>
     <span className="flex items-center gap-2">{icon}{text}</span>
   </Button>
 );
+
+const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
+  if (!images || images.length === 0) {
+    return (
+      <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 bg-gray-100 rounded-lg flex items-center justify-center">
+        <span className="text-gray-400 text-sm">No Image</span>
+      </div>
+    );
+  }
+
+  if (images.length === 1) {
+    return (
+      <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+        <img 
+          src={`/images/${images[0]}`} 
+          alt={`Bộ thủ hình ảnh`}
+          className="w-full h-full object-contain"
+          onError={(e) => {
+            e.target.style.display = 'none';
+            e.target.nextSibling.style.display = 'flex';
+          }}
+        />
+        <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm" style={{display: 'none'}}>
+          No Image
+        </div>
+      </div>
+    );
+  }
+
+  const goToPrevImage = () => {
+    onImageChange((currentIndex - 1 + images.length) % images.length);
+  };
+
+  const goToNextImage = () => {
+    onImageChange((currentIndex + 1) % images.length);
+  };
+
+  return (
+    <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 bg-gray-100 rounded-lg overflow-hidden">
+      <img 
+        src={`/images/${images[currentIndex]}`} 
+        alt={`Bộ thủ hình ảnh ${currentIndex + 1}`}
+        className="w-full h-full object-contain"
+        onError={(e) => {
+          e.target.style.display = 'none';
+          e.target.nextSibling.style.display = 'flex';
+        }}
+      />
+      <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm" style={{display: 'none'}}>
+        No Image
+      </div>
+      
+      {/* Navigation buttons */}
+      <div className="absolute inset-0 flex items-center justify-between opacity-0 hover:opacity-100 transition-opacity">
+        <button
+          onClick={goToPrevImage}
+          className="w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors"
+        >
+          <ArrowLeft size={16} />
+        </button>
+        <button
+          onClick={goToNextImage}
+          className="w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors"
+        >
+          <ArrowRight size={16} />
+        </button>
+      </div>
+      
+      {/* Image counter */}
+      <div className="absolute bottom-2 right-2 bg-black/50 text-white text-sm px-2 py-1 rounded">
+        {currentIndex + 1}/{images.length}
+      </div>
+    </div>
+  );
+};
 
 const FlashcardModal = ({ 
   isOpen, 
@@ -24,7 +99,9 @@ const FlashcardModal = ({
   onGoFirst,
   onGoPrev,
   onGoNext,
-  allData
+  allData,
+  currentImageIndex,
+  onImageChange
 }) => {
   const modalRef = useRef(null);
   const slideRef = useRef(null);
@@ -123,8 +200,15 @@ const FlashcardModal = ({
               {/* Main content */}
               <div className="text-center mb-12">
                 {/* Radical */}
-                <div className="text-emerald-700 text-8xl md:text-9xl font-bold mb-6">
-                  {currentRadical.boThu}
+                <div className="flex items-center justify-center gap-8 mb-6">
+                  <div className="text-emerald-700 text-8xl md:text-9xl font-bold">
+                    {currentRadical.boThu}
+                  </div>
+                  <ImageCarousel 
+                    images={currentRadical.hinhAnh}
+                    currentIndex={currentImageIndex}
+                    onImageChange={onImageChange}
+                  />
                 </div>
                 
                 {/* Name and Pinyin */}

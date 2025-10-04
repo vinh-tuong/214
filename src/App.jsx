@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, useEffect } from "react";
+import React, { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Square, ChevronLeft, ChevronRight, ChevronsLeft, Volume2, Monitor, ArrowLeft, ArrowRight } from "lucide-react";
@@ -26,6 +26,46 @@ function groupByStroke(data) {
     return acc;
   }, {});
 }
+
+// Hook for swipe gestures
+const useSwipe = (onSwipeLeft, onSwipeRight, threshold = 50) => {
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > threshold;
+    const isRightSwipe = distance < -threshold;
+
+    if (isLeftSwipe && onSwipeLeft) {
+      onSwipeLeft();
+    }
+    if (isRightSwipe && onSwipeRight) {
+      onSwipeRight();
+    }
+    
+    // Reset touch states
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
+  return {
+    onTouchStart,
+    onTouchMove,
+    onTouchEnd
+  };
+};
 
 const Slide = ({ item, index, total, difficult, onToggleDiff }) => {
   return (
@@ -57,8 +97,8 @@ const Slide = ({ item, index, total, difficult, onToggleDiff }) => {
 };
 
 const SmallButton = ({ icon, text, onClick, disabled=false }) => (
-  <Button variant="outline" className="rounded-2xl px-5" onClick={onClick} disabled={disabled}>
-    <span className="flex items-center gap-2">{icon}{text}</span>
+  <Button variant="outline" className="rounded-2xl px-3 sm:px-5 text-sm" onClick={onClick} disabled={disabled}>
+    <span className="flex items-center gap-1 sm:gap-2">{icon}<span className="hidden sm:inline">{text}</span></span>
   </Button>
 );
 
@@ -144,6 +184,7 @@ export default function App() {
   const [playing, setPlaying] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState('next'); // 'next' or 'prev'
   const [difficultSet, setDifficultSet] = useState(() => {
     // Load from localStorage on initialization
     const saved = localStorage.getItem('difficultRadicals');
@@ -200,9 +241,21 @@ export default function App() {
     setCurrentImageIndex(0);
   }, [idx, stroke]);
 
-  const goFirst = () => setIdx(0);
-  const goPrev = () => setIdx((i) => (i - 1 + total) % total);
-  const goNext = () => setIdx((i) => (i + 1) % total);
+  const goFirst = () => {
+    setSlideDirection('next');
+    setIdx(0);
+  };
+  const goPrev = () => {
+    setSlideDirection('prev');
+    setIdx((i) => (i - 1 + total) % total);
+  };
+  const goNext = () => {
+    setSlideDirection('next');
+    setIdx((i) => (i + 1) % total);
+  };
+
+  // Swipe gestures
+  const swipeHandlers = useSwipe(goNext, goPrev);
 
   const toggleDiff = () => {
     if (!cur) return;
@@ -250,14 +303,18 @@ export default function App() {
 
   const slideRef = useRef(null);
 
-  // smooth slide animation (left → right)
+  // smooth slide animation with direction
   useEffect(() => {
     if (!slideRef.current) return;
+    
+    // Determine animation direction
+    const isNextSlide = slideDirection === 'next';
+    
     slideRef.current.animate([
-      { transform: 'translateX(-30px)', opacity: 0.7 },
+      { transform: isNextSlide ? 'translateX(30px)' : 'translateX(-30px)', opacity: 0.7 },
       { transform: 'translateX(0px)', opacity: 1 }
     ], { duration: 400, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' });
-  }, [idx, stroke]);
+  }, [idx, stroke, slideDirection]);
 
   const strokesAvailable = useMemo(() => Object.keys(groups).map(Number).sort((a,b)=>a-b), [groups]);
 
@@ -272,12 +329,12 @@ export default function App() {
           <aside className="space-y-4">
             <div className="p-4 bg-white rounded-2xl shadow">
               <div className="text-sm text-gray-600 mb-2">Nhóm theo số nét</div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 max-w-full overflow-hidden">
                 {/* Difficult group button */}
                 <Button
                   key="popular"
                   variant={stroke==="popular"?"default":"outline"}
-                  className="rounded-full h-9 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                  className="rounded-full h-9 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 text-xs sm:text-sm whitespace-nowrap"
                   onClick={()=>setStroke("popular")}
                 >
                   🔥 Popular ({popularGroup.length})
@@ -285,7 +342,7 @@ export default function App() {
                 <Button
                   key="difficult"
                   variant={stroke==="difficult"?"default":"outline"}
-                  className="rounded-full h-9 bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                  className="rounded-full h-9 bg-red-50 border-red-200 text-red-700 hover:bg-red-100 text-xs sm:text-sm whitespace-nowrap"
                   onClick={()=>setStroke("difficult")}
                 >
                   ⭐ Difficult ({difficultGroup.length})
@@ -293,7 +350,7 @@ export default function App() {
                 
                 {/* Stroke count buttons */}
                 {strokesAvailable.map((n) => (
-                  <Button key={n} variant={stroke===n?"default":"outline"} className="rounded-full h-9" onClick={()=>setStroke(n)}>
+                  <Button key={n} variant={stroke===n?"default":"outline"} className="rounded-full h-9 text-xs sm:text-sm whitespace-nowrap" onClick={()=>setStroke(n)}>
                     {n} nét ({groups[n].length})
                   </Button>
                 ))}
@@ -311,9 +368,12 @@ export default function App() {
 
           <main>
             {cur ? (
-              <div ref={slideRef}>
-                <Card className="w-full max-w-2xl mx-auto shadow-xl rounded-2xl">
-                  <CardContent className="p-6">
+              <Card 
+                className="w-full max-w-2xl mx-auto shadow-xl rounded-2xl touch-pan-y"
+                {...swipeHandlers}
+              >
+                <CardContent className="p-6">
+                  <div ref={slideRef}>
                     <div className="flex justify-between items-start">
                       <div className="text-gray-500">{idx + 1} / {total}</div>
                       <label className="flex items-center gap-2 text-sm text-gray-500 select-none">
@@ -340,20 +400,20 @@ export default function App() {
                        )}
                      </div>
 
-                    <div className="mt-8 flex gap-3 justify-center">
-                      <Button variant={playing?"destructive":"default"} className="rounded-2xl" onClick={() => setPlaying(p=>!p)}>
-                        {playing ? (<span className="flex items-center gap-2"><Square size={18}/>Stop</span>) : (<span className="flex items-center gap-2"><Play size={18}/>Play</span>)}
+                    <div className="mt-8 flex flex-wrap gap-2 sm:gap-3 justify-center">
+                      <Button variant={playing?"destructive":"default"} className="rounded-2xl text-sm" onClick={() => setPlaying(p=>!p)}>
+                        {playing ? (<span className="flex items-center gap-1 sm:gap-2"><Square size={16}/><span className="hidden sm:inline">Stop</span></span>) : (<span className="flex items-center gap-1 sm:gap-2"><Play size={16}/><span className="hidden sm:inline">Play</span></span>)}
                       </Button>
                       
                       {/* Slideshow button */}
                       <Button 
                         variant="outline" 
-                        className="rounded-2xl bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100" 
+                        className="rounded-2xl bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 text-sm" 
                         onClick={() => setIsModalOpen(true)}
                       >
-                        <span className="flex items-center gap-2">
-                          <Monitor size={18}/>
-                          Slideshow
+                        <span className="flex items-center gap-1 sm:gap-2">
+                          <Monitor size={16}/>
+                          <span className="hidden sm:inline">Slideshow</span>
                         </span>
                       </Button>
                       
@@ -361,24 +421,24 @@ export default function App() {
                       {isSupported && (
                         <Button 
                           variant="outline" 
-                          className="rounded-2xl" 
+                          className="rounded-2xl text-sm" 
                           onClick={speakRadical}
                           disabled={isSpeaking}
                         >
-                          <span className="flex items-center gap-2">
-                            <Volume2 size={18}/>
-                            Audio
+                          <span className="flex items-center gap-1 sm:gap-2">
+                            <Volume2 size={16}/>
+                            <span className="hidden sm:inline">Audio</span>
                           </span>
                         </Button>
                       )}
                       
-                      <SmallButton icon={<ChevronsLeft size={18}/>} text="First" onClick={goFirst} />
-                      <SmallButton icon={<ChevronLeft size={18}/>} text="Prev" onClick={goPrev} />
-                      <SmallButton icon={<ChevronRight size={18}/>} text="Next" onClick={goNext} />
+                      <SmallButton icon={<ChevronsLeft size={16}/>} text="First" onClick={goFirst} />
+                      <SmallButton icon={<ChevronLeft size={16}/>} text="Prev" onClick={goPrev} />
+                      <SmallButton icon={<ChevronRight size={16}/>} text="Next" onClick={goNext} />
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
             ) : (
               <div className="text-center text-gray-500">
                 {stroke === 'difficult'
@@ -394,6 +454,7 @@ export default function App() {
 
         <footer className="mt-8 text-xs text-gray-500">
           <p>© 2025 – Flashcards Bộ thủ. Tự động chạy: 3 giây / thẻ. Hiệu ứng trượt trái → phải.</p>
+          <p className="mt-1">💡 Trên mobile: Vuốt trái/phải trên thẻ để chuyển slide.</p>
         </footer>
       </div>
 

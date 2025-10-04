@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Square, ChevronLeft, ChevronRight, ChevronsLeft, Volume2, X, ArrowLeft, ArrowRight } from "lucide-react";
@@ -105,6 +105,23 @@ const FlashcardModal = ({
 }) => {
   const modalRef = useRef(null);
   const slideRef = useRef(null);
+  const [slideDirection, setSlideDirection] = useState('next'); // 'next' or 'prev'
+
+  // Navigation wrappers to set direction
+  const handleGoFirst = () => {
+    setSlideDirection('next');
+    onGoFirst();
+  };
+  
+  const handleGoPrev = () => {
+    setSlideDirection('prev');
+    onGoPrev();
+  };
+  
+  const handleGoNext = () => {
+    setSlideDirection('next');
+    onGoNext();
+  };
 
   // Helper function to get radical by STT
   const getRadicalByStt = (stt) => {
@@ -149,14 +166,18 @@ const FlashcardModal = ({
     }
   };
 
-  // Smooth slide animation (left → right)
+  // Smooth slide animation with direction
   useEffect(() => {
     if (!slideRef.current) return;
+    
+    // Determine animation direction
+    const isNextSlide = slideDirection === 'next';
+    
     slideRef.current.animate([
-      { transform: 'translateX(-30px)', opacity: 0.7 },
+      { transform: isNextSlide ? 'translateX(30px)' : 'translateX(-30px)', opacity: 0.7 },
       { transform: 'translateX(0px)', opacity: 1 }
     ], { duration: 400, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' });
-  }, [currentIndex]);
+  }, [currentIndex, slideDirection]);
 
   if (!isOpen || !currentRadical) return null;
 
@@ -178,27 +199,28 @@ const FlashcardModal = ({
         </Button>
 
         {/* Flashcard */}
-        <div ref={slideRef} className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
           <Card className="border-0 shadow-none">
             <CardContent className="p-8 md:p-12">
-              {/* Header */}
-              <div className="flex justify-between items-start mb-8">
-                <div className="text-gray-500 text-lg font-medium">
-                  {currentIndex + 1} / {total}
+              <div ref={slideRef}>
+                {/* Header */}
+                <div className="flex justify-between items-start mb-8">
+                  <div className="text-gray-500 text-lg font-medium">
+                    {currentIndex + 1} / {total}
+                  </div>
+                  <label className="flex items-center gap-3 text-sm text-gray-500 select-none">
+                    <span className="font-medium">Difficult?</span>
+                    <input 
+                      type="checkbox" 
+                      checked={isDifficult} 
+                      onChange={onToggleDiff}
+                      className="w-5 h-5 rounded border-2 border-gray-300"
+                    />
+                  </label>
                 </div>
-                <label className="flex items-center gap-3 text-sm text-gray-500 select-none">
-                  <span className="font-medium">Difficult?</span>
-                  <input 
-                    type="checkbox" 
-                    checked={isDifficult} 
-                    onChange={onToggleDiff}
-                    className="w-5 h-5 rounded border-2 border-gray-300"
-                  />
-                </label>
-              </div>
 
-              {/* Main content */}
-              <div className="text-center mb-12">
+                {/* Main content */}
+                <div className="text-center mb-12">
                 {/* Radical */}
                 <div className="flex items-center justify-center gap-8 mb-6">
                   <div className="text-emerald-700 text-8xl md:text-9xl font-bold">
@@ -262,18 +284,19 @@ const FlashcardModal = ({
                 <SmallButton 
                   icon={<ChevronsLeft size={20}/>} 
                   text="First" 
-                  onClick={onGoFirst} 
+                  onClick={handleGoFirst} 
                 />
                 <SmallButton 
                   icon={<ChevronLeft size={20}/>} 
                   text="Prev" 
-                  onClick={onGoPrev} 
+                  onClick={handleGoPrev} 
                 />
                 <SmallButton 
                   icon={<ChevronRight size={20}/>} 
                   text="Next" 
-                  onClick={onGoNext} 
+                  onClick={handleGoNext} 
                 />
+              </div>
               </div>
             </CardContent>
           </Card>

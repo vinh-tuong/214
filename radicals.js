@@ -6,7 +6,8 @@ const RADICALS = [
     "tenBoThu": "Nhất",
     "phienAm": "yi",
     "yNghia": "số một",
-    "soNet": 1
+    "soNet": 1,
+    "ghepTu": []
   },
   {
     "stt": 2,
@@ -14,7 +15,8 @@ const RADICALS = [
     "tenBoThu": "Cổn",
     "phienAm": "gǔn",
     "yNghia": "nét sổ",
-    "soNet": 1
+    "soNet": 1,
+    "ghepTu": []
   },
   {
     "stt": 3,
@@ -22,7 +24,8 @@ const RADICALS = [
     "tenBoThu": "Chủ",
     "phienAm": "zhǔ",
     "yNghia": "điểm, chấm",
-    "soNet": 1
+    "soNet": 1,
+    "ghepTu": []
   },
   {
     "stt": 4,
@@ -30,7 +33,8 @@ const RADICALS = [
     "tenBoThu": "Phiệt",
     "phienAm": "piě",
     "yNghia": "nét sổ xiên qua trái",
-    "soNet": 1
+    "soNet": 1,
+    "ghepTu": []
   },
   {
     "stt": 5,
@@ -38,7 +42,8 @@ const RADICALS = [
     "tenBoThu": "Ất",
     "phienAm": "yǐ",
     "yNghia": "vị trí thứ hai trong thiên can",
-    "soNet": 1
+    "soNet": 1,
+    "ghepTu": []
   },
   {
     "stt": 6,
@@ -46,7 +51,8 @@ const RADICALS = [
     "tenBoThu": "Quyết",
     "phienAm": "jué",
     "yNghia": "nét sổ có móc",
-    "soNet": 1
+    "soNet": 1,
+    "ghepTu": []
   },
   {
     "stt": 7,
@@ -54,7 +60,8 @@ const RADICALS = [
     "tenBoThu": "Nhị",
     "phienAm": "ér",
     "yNghia": "Số hai",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": [1, 1]
   },
   {
     "stt": 8,
@@ -62,7 +69,8 @@ const RADICALS = [
     "tenBoThu": "Đầu",
     "phienAm": "tóu",
     "yNghia": "Không có ý nghĩa",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": [3, 1]
   },
   {
     "stt": 9,
@@ -70,7 +78,8 @@ const RADICALS = [
     "tenBoThu": "Nhân",
     "phienAm": "rén",
     "yNghia": "Người",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 10,
@@ -78,7 +87,8 @@ const RADICALS = [
     "tenBoThu": "Nhi",
     "phienAm": "ér",
     "yNghia": "Trẻ con",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 11,
@@ -86,7 +96,8 @@ const RADICALS = [
     "tenBoThu": "Nhập",
     "phienAm": "rù",
     "yNghia": "Vào",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 12,
@@ -94,7 +105,8 @@ const RADICALS = [
     "tenBoThu": "Bát",
     "phienAm": "bā",
     "yNghia": "Số tám",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": [4, 4]
   },
   {
     "stt": 13,
@@ -102,7 +114,8 @@ const RADICALS = [
     "tenBoThu": "Quynh",
     "phienAm": "jiǒng",
     "yNghia": "Vùng biên giới xa; hoang địa",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 14,
@@ -110,7 +123,8 @@ const RADICALS = [
     "tenBoThu": "Mịch",
     "phienAm": "mì",
     "yNghia": "Trùm khăn lên",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 15,
@@ -118,7 +132,8 @@ const RADICALS = [
     "tenBoThu": "Băng",
     "phienAm": "bīng",
     "yNghia": "Nước đá",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 16,
@@ -126,7 +141,8 @@ const RADICALS = [
     "tenBoThu": "Kỷ",
     "phienAm": "jī",
     "yNghia": "Ghế dựa",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 17,
@@ -134,7 +150,8 @@ const RADICALS = [
     "tenBoThu": "Khảm",
     "phienAm": "kǎn",
     "yNghia": "Há miệng",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 18,
@@ -142,7 +159,8 @@ const RADICALS = [
     "tenBoThu": "Đao",
     "phienAm": "dāo",
     "yNghia": "Con dao, cây đao (vũ khí)",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 19,
@@ -150,7 +168,8 @@ const RADICALS = [
     "tenBoThu": "Lực",
     "phienAm": "lì",
     "yNghia": "Sức mạnh",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 20,
@@ -158,7 +177,8 @@ const RADICALS = [
     "tenBoThu": "Bao",
     "phienAm": "bā",
     "yNghia": "Bao bọc",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 21,
@@ -166,7 +186,8 @@ const RADICALS = [
     "tenBoThu": "Chuỷ",
     "phienAm": "bǐ",
     "yNghia": "Cái thìa (cái muỗng)",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 22,
@@ -174,7 +195,8 @@ const RADICALS = [
     "tenBoThu": "Phương",
     "phienAm": "fāng",
     "yNghia": "Tủ đựng",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 23,
@@ -182,7 +204,8 @@ const RADICALS = [
     "tenBoThu": "Hệ",
     "phienAm": "xǐ",
     "yNghia": "Che đậy, giấu giếm",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 24,
@@ -190,7 +213,8 @@ const RADICALS = [
     "tenBoThu": "Thập",
     "phienAm": "shí",
     "yNghia": "Số mười",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": [1, 2]
   },
   {
     "stt": 25,
@@ -198,7 +222,8 @@ const RADICALS = [
     "tenBoThu": "Bốc",
     "phienAm": "bǔ",
     "yNghia": "Xem bói",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 26,
@@ -206,7 +231,8 @@ const RADICALS = [
     "tenBoThu": "Tiết",
     "phienAm": "jié",
     "yNghia": "Đốt tre",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 27,
@@ -214,7 +240,8 @@ const RADICALS = [
     "tenBoThu": "Hán",
     "phienAm": "hàn",
     "yNghia": "Sườn núi, vách đá",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 28,
@@ -222,7 +249,8 @@ const RADICALS = [
     "tenBoThu": "Khư, tư",
     "phienAm": "sī",
     "yNghia": "Riêng tư",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 29,
@@ -230,7 +258,8 @@ const RADICALS = [
     "tenBoThu": "Hựu",
     "phienAm": "yòu",
     "yNghia": "Lại nữa, một lần nữa",
-    "soNet": 2
+    "soNet": 2,
+    "ghepTu": []
   },
   {
     "stt": 30,
@@ -238,7 +267,8 @@ const RADICALS = [
     "tenBoThu": "Khẩu",
     "phienAm": "kǒu",
     "yNghia": "cái miệng",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 31,
@@ -246,7 +276,8 @@ const RADICALS = [
     "tenBoThu": "Vi",
     "phienAm": "wéi",
     "yNghia": "Vây quanh",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 32,
@@ -254,7 +285,8 @@ const RADICALS = [
     "tenBoThu": "Thổ",
     "phienAm": "tǔ",
     "yNghia": "Đất",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 33,
@@ -262,7 +294,8 @@ const RADICALS = [
     "tenBoThu": "Sĩ",
     "phienAm": "shì",
     "yNghia": "Kẻ sĩ",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 34,
@@ -270,7 +303,8 @@ const RADICALS = [
     "tenBoThu": "Tuy",
     "phienAm": "sūi",
     "yNghia": "Đi chậm",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 35,
@@ -278,7 +312,8 @@ const RADICALS = [
     "tenBoThu": "Truy",
     "phienAm": "zhǐ",
     "yNghia": "Đến sau",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 36,
@@ -286,7 +321,8 @@ const RADICALS = [
     "tenBoThu": "Tịch",
     "phienAm": "xì",
     "yNghia": "Đêm tối",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 37,
@@ -294,7 +330,8 @@ const RADICALS = [
     "tenBoThu": "Đại",
     "phienAm": "dà",
     "yNghia": "To lớn",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": [1, 4]
   },
   {
     "stt": 38,
@@ -302,7 +339,8 @@ const RADICALS = [
     "tenBoThu": "Nữ",
     "phienAm": "nǚ",
     "yNghia": "Nữ giới, con gái, đàn bà",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 39,
@@ -310,7 +348,8 @@ const RADICALS = [
     "tenBoThu": "Tử",
     "phienAm": "zǐ",
     "yNghia": "Con; tiếng tôn xưng: «Thầy», «Ngài»",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 40,
@@ -318,7 +357,8 @@ const RADICALS = [
     "tenBoThu": "Miên",
     "phienAm": "mián",
     "yNghia": "Mái nhà mái che",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 41,
@@ -326,7 +366,8 @@ const RADICALS = [
     "tenBoThu": "Thốn",
     "phienAm": "cùn",
     "yNghia": "đơn vị «tấc» (đo chiều dài)",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 42,
@@ -334,7 +375,8 @@ const RADICALS = [
     "tenBoThu": "Tiểu",
     "phienAm": "xiǎo",
     "yNghia": "Nhỏ bé",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": [4, 4]
   },
   {
     "stt": 43,
@@ -342,7 +384,8 @@ const RADICALS = [
     "tenBoThu": "Uông",
     "phienAm": "wāng",
     "yNghia": "Yếu đuối",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 44,
@@ -350,7 +393,8 @@ const RADICALS = [
     "tenBoThu": "Thi",
     "phienAm": "shī",
     "yNghia": "Xác chết, thây ma",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 45,
@@ -358,7 +402,8 @@ const RADICALS = [
     "tenBoThu": "Triệt",
     "phienAm": "chè",
     "yNghia": "Mầm non",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 46,
@@ -366,7 +411,8 @@ const RADICALS = [
     "tenBoThu": "Sơn",
     "phienAm": "shān",
     "yNghia": "Núi non",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 47,
@@ -374,7 +420,8 @@ const RADICALS = [
     "tenBoThu": "Xuyên",
     "phienAm": "chuān",
     "yNghia": "Sông ngòi",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 48,
@@ -382,7 +429,8 @@ const RADICALS = [
     "tenBoThu": "Công",
     "phienAm": "gōng",
     "yNghia": "Người thợ, công việc",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 49,
@@ -390,7 +438,8 @@ const RADICALS = [
     "tenBoThu": "Kỷ",
     "phienAm": "jǐ",
     "yNghia": "Bản thân mình",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 50,
@@ -398,7 +447,8 @@ const RADICALS = [
     "tenBoThu": "Cân",
     "phienAm": "jīn",
     "yNghia": "Cái khăn",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 51,
@@ -406,7 +456,8 @@ const RADICALS = [
     "tenBoThu": "Can",
     "phienAm": "gān",
     "yNghia": "Thiên can, can dự",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 52,
@@ -414,7 +465,8 @@ const RADICALS = [
     "tenBoThu": "Yêu",
     "phienAm": "yāo",
     "yNghia": "Nhỏ nhắn",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 53,
@@ -422,7 +474,8 @@ const RADICALS = [
     "tenBoThu": "Nghiễm",
     "phienAm": "ān",
     "yNghia": "Mái nhà",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 54,
@@ -430,7 +483,8 @@ const RADICALS = [
     "tenBoThu": "Dẫn",
     "phienAm": "yǐn",
     "yNghia": "Bước dài",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 55,
@@ -438,7 +492,8 @@ const RADICALS = [
     "tenBoThu": "Củng",
     "phienAm": "gǒng",
     "yNghia": "Chắp tay",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 56,
@@ -446,7 +501,8 @@ const RADICALS = [
     "tenBoThu": "Dặc",
     "phienAm": "yì",
     "yNghia": "Bắn, chiếm lấy",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 57,
@@ -454,7 +510,8 @@ const RADICALS = [
     "tenBoThu": "Cung",
     "phienAm": "gōng",
     "yNghia": "Cái cung (để bắn tên)",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 58,
@@ -462,7 +519,8 @@ const RADICALS = [
     "tenBoThu": "Kệ",
     "phienAm": "jì",
     "yNghia": "Đầu con nhím",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 59,
@@ -470,7 +528,8 @@ const RADICALS = [
     "tenBoThu": "Sam",
     "phienAm": "shān",
     "yNghia": "Lông tóc dài",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 60,
@@ -478,7 +537,8 @@ const RADICALS = [
     "tenBoThu": "Xích",
     "phienAm": "chì",
     "yNghia": "Bước chân trái.",
-    "soNet": 3
+    "soNet": 3,
+    "ghepTu": []
   },
   {
     "stt": 61,
@@ -486,7 +546,8 @@ const RADICALS = [
     "tenBoThu": "Tâm",
     "phienAm": "xīn",
     "yNghia": "Quả tim, tâm trí, tấm lòng",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 62,
@@ -494,7 +555,8 @@ const RADICALS = [
     "tenBoThu": "Qua",
     "phienAm": "gē",
     "yNghia": "Cây qua (một thứ binh khí dài)",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 63,
@@ -502,7 +564,8 @@ const RADICALS = [
     "tenBoThu": "Hộ",
     "phienAm": "hù",
     "yNghia": "Cửa một cánh",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 64,
@@ -510,7 +573,8 @@ const RADICALS = [
     "tenBoThu": "Thủ",
     "phienAm": "shǒu",
     "yNghia": "Tay",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 65,
@@ -518,7 +582,8 @@ const RADICALS = [
     "tenBoThu": "Chi",
     "phienAm": "zhī",
     "yNghia": "Cành nhánh",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 66,
@@ -526,7 +591,8 @@ const RADICALS = [
     "tenBoThu": "Phộc",
     "phienAm": "pù",
     "yNghia": "Đánh khẽ",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 67,
@@ -534,7 +600,8 @@ const RADICALS = [
     "tenBoThu": "Văn",
     "phienAm": "wén",
     "yNghia": "Nét vằn",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 68,
@@ -542,7 +609,8 @@ const RADICALS = [
     "tenBoThu": "Đẩu",
     "phienAm": "dōu",
     "yNghia": "Cái đấu để đong",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 69,
@@ -550,7 +618,8 @@ const RADICALS = [
     "tenBoThu": "Cân",
     "phienAm": "jīn",
     "yNghia": "Cái búa, rìu",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 70,
@@ -558,7 +627,8 @@ const RADICALS = [
     "tenBoThu": "Phương",
     "phienAm": "fāng",
     "yNghia": "Vuông",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 71,
@@ -566,7 +636,8 @@ const RADICALS = [
     "tenBoThu": "Vô",
     "phienAm": "wú",
     "yNghia": "Không",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 72,
@@ -574,7 +645,8 @@ const RADICALS = [
     "tenBoThu": "Nhật",
     "phienAm": "rì",
     "yNghia": "Ngày, mặt trời",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 73,
@@ -582,7 +654,8 @@ const RADICALS = [
     "tenBoThu": "Viết",
     "phienAm": "yuē",
     "yNghia": "Nói rằng",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 74,
@@ -590,7 +663,8 @@ const RADICALS = [
     "tenBoThu": "Nguyệt",
     "phienAm": "yuè",
     "yNghia": "Tháng, mặt trăng",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 75,
@@ -598,7 +672,8 @@ const RADICALS = [
     "tenBoThu": "Mộc",
     "phienAm": "mù",
     "yNghia": "Gỗ, cây cối",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 76,
@@ -606,7 +681,8 @@ const RADICALS = [
     "tenBoThu": "Khiếm",
     "phienAm": "qiàn",
     "yNghia": "Khiếm khuyết, thiếu vắng",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 77,
@@ -614,7 +690,8 @@ const RADICALS = [
     "tenBoThu": "Chỉ",
     "phienAm": "zhǐ",
     "yNghia": "Dừng lại",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 78,
@@ -622,7 +699,8 @@ const RADICALS = [
     "tenBoThu": "Đãi",
     "phienAm": "dǎi",
     "yNghia": "Xấu xa, tệ hại",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 79,
@@ -630,7 +708,8 @@ const RADICALS = [
     "tenBoThu": "Thù",
     "phienAm": "shū",
     "yNghia": "Binh khí dài",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 80,
@@ -638,7 +717,8 @@ const RADICALS = [
     "tenBoThu": "Vô",
     "phienAm": "wú",
     "yNghia": "Chớ, đừng",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 81,
@@ -646,7 +726,8 @@ const RADICALS = [
     "tenBoThu": "Tỷ",
     "phienAm": "bǐ",
     "yNghia": "So sánh",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 82,
@@ -654,7 +735,8 @@ const RADICALS = [
     "tenBoThu": "Mao",
     "phienAm": "máo",
     "yNghia": "Lông",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 83,
@@ -662,7 +744,8 @@ const RADICALS = [
     "tenBoThu": "Thị",
     "phienAm": "shì",
     "yNghia": "Họ",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 84,
@@ -670,7 +753,8 @@ const RADICALS = [
     "tenBoThu": "Khí",
     "phienAm": "qì",
     "yNghia": "Hơi nước",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 85,
@@ -678,7 +762,8 @@ const RADICALS = [
     "tenBoThu": "Thủy",
     "phienAm": "shǔi",
     "yNghia": "Nước",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 86,
@@ -686,7 +771,8 @@ const RADICALS = [
     "tenBoThu": "Hỏa",
     "phienAm": "huǒ",
     "yNghia": "Lửa",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 87,
@@ -694,7 +780,8 @@ const RADICALS = [
     "tenBoThu": "Trảo",
     "phienAm": "zhǎo",
     "yNghia": "Móng vuốt cầm thú",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 88,
@@ -702,7 +789,8 @@ const RADICALS = [
     "tenBoThu": "Phụ",
     "phienAm": "fù",
     "yNghia": "Cha",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 89,
@@ -710,7 +798,8 @@ const RADICALS = [
     "tenBoThu": "Hào",
     "phienAm": "yáo",
     "yNghia": "Hào âm, hào dương (Kinh Dịch)",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 90,
@@ -718,7 +807,8 @@ const RADICALS = [
     "tenBoThu": "Tường",
     "phienAm": "qiáng",
     "yNghia": "Mảnh gỗ, cái giường",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 91,
@@ -726,7 +816,8 @@ const RADICALS = [
     "tenBoThu": "Phiến",
     "phienAm": "piàn",
     "yNghia": "Mảnh, tấm, miếng",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 92,
@@ -734,7 +825,8 @@ const RADICALS = [
     "tenBoThu": "Nha",
     "phienAm": "yá",
     "yNghia": "Răng",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 93,
@@ -742,7 +834,8 @@ const RADICALS = [
     "tenBoThu": "Ngưu",
     "phienAm": "níu",
     "yNghia": "Trâu",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 94,
@@ -750,7 +843,8 @@ const RADICALS = [
     "tenBoThu": "Khuyển",
     "phienAm": "quǎn",
     "yNghia": "Con chó",
-    "soNet": 4
+    "soNet": 4,
+    "ghepTu": []
   },
   {
     "stt": 95,
@@ -758,7 +852,8 @@ const RADICALS = [
     "tenBoThu": "Huyền",
     "phienAm": "xuán",
     "yNghia": "Màu đen huyền, huyền bí",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 96,
@@ -766,7 +861,8 @@ const RADICALS = [
     "tenBoThu": "Ngọc",
     "phienAm": "yù",
     "yNghia": "Đá quý, ngọc",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 97,
@@ -774,7 +870,8 @@ const RADICALS = [
     "tenBoThu": "Qua",
     "phienAm": "guā",
     "yNghia": "Quả dưa",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 98,
@@ -782,7 +879,8 @@ const RADICALS = [
     "tenBoThu": "Ngõa",
     "phienAm": "wǎ",
     "yNghia": "Ngói",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 99,
@@ -790,7 +888,8 @@ const RADICALS = [
     "tenBoThu": "Cam",
     "phienAm": "gān",
     "yNghia": "Ngọt",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 100,
@@ -798,7 +897,8 @@ const RADICALS = [
     "tenBoThu": "Sinh",
     "phienAm": "shēng",
     "yNghia": "Sinh sôi,nảy nở",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 101,
@@ -806,7 +906,8 @@ const RADICALS = [
     "tenBoThu": "Dụng",
     "phienAm": "yòng",
     "yNghia": "Dùng",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 102,
@@ -814,7 +915,8 @@ const RADICALS = [
     "tenBoThu": "Điền",
     "phienAm": "tián",
     "yNghia": "Ruộng",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 103,
@@ -822,7 +924,8 @@ const RADICALS = [
     "tenBoThu": "Thất",
     "phienAm": "pǐ",
     "yNghia": "Đơn vị đo chiều dài, tấm (vải)",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 104,
@@ -830,7 +933,8 @@ const RADICALS = [
     "tenBoThu": "Nạch",
     "phienAm": "nǐ",
     "yNghia": "Bệnh tật",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 105,
@@ -838,7 +942,8 @@ const RADICALS = [
     "tenBoThu": "Bát",
     "phienAm": "bǒ",
     "yNghia": "Gạt ngược lại, trở lại",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 106,
@@ -846,7 +951,8 @@ const RADICALS = [
     "tenBoThu": "Bạch",
     "phienAm": "bái",
     "yNghia": "Màu trắng",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 107,
@@ -854,7 +960,8 @@ const RADICALS = [
     "tenBoThu": "Bì",
     "phienAm": "pí",
     "yNghia": "Da",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 108,
@@ -862,7 +969,8 @@ const RADICALS = [
     "tenBoThu": "Mãnh",
     "phienAm": "mǐn",
     "yNghia": "Bát dĩa",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 109,
@@ -870,7 +978,8 @@ const RADICALS = [
     "tenBoThu": "Mục",
     "phienAm": "mù",
     "yNghia": "Mắt",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 110,
@@ -878,7 +987,8 @@ const RADICALS = [
     "tenBoThu": "Mâu",
     "phienAm": "máo",
     "yNghia": "Cây giáo để đâm",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 111,
@@ -886,7 +996,8 @@ const RADICALS = [
     "tenBoThu": "Thỉ",
     "phienAm": "shǐ",
     "yNghia": "Cây tên, mũi tên",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 112,
@@ -894,7 +1005,8 @@ const RADICALS = [
     "tenBoThu": "Thạch",
     "phienAm": "shí",
     "yNghia": "Đá",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 113,
@@ -902,7 +1014,8 @@ const RADICALS = [
     "tenBoThu": "Thị, kỳ",
     "phienAm": "shì",
     "yNghia": "Chỉ thị; thần đất",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 114,
@@ -910,7 +1023,8 @@ const RADICALS = [
     "tenBoThu": "Nhựu",
     "phienAm": "róu",
     "yNghia": "Vết chân, lốt chân",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 115,
@@ -918,7 +1032,8 @@ const RADICALS = [
     "tenBoThu": "Hòa",
     "phienAm": "hé",
     "yNghia": "Lúa",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 116,
@@ -926,7 +1041,8 @@ const RADICALS = [
     "tenBoThu": "Huyệt",
     "phienAm": "xué",
     "yNghia": "Hang lỗ",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 117,
@@ -934,7 +1050,8 @@ const RADICALS = [
     "tenBoThu": "Lập",
     "phienAm": "lì",
     "yNghia": "Đứng, thành lập",
-    "soNet": 5
+    "soNet": 5,
+    "ghepTu": []
   },
   {
     "stt": 118,
@@ -942,7 +1059,8 @@ const RADICALS = [
     "tenBoThu": "Trúc",
     "phienAm": "zhú",
     "yNghia": "Tre trúc",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 119,
@@ -950,7 +1068,8 @@ const RADICALS = [
     "tenBoThu": "Mễ",
     "phienAm": "mǐ",
     "yNghia": "Gạo",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 120,
@@ -958,7 +1077,8 @@ const RADICALS = [
     "tenBoThu": "Mịch",
     "phienAm": "mì",
     "yNghia": "Sợi tơ nhỏ",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 121,
@@ -966,7 +1086,8 @@ const RADICALS = [
     "tenBoThu": "Phẫu",
     "phienAm": "fǒu",
     "yNghia": "Đồ sành",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 122,
@@ -974,7 +1095,8 @@ const RADICALS = [
     "tenBoThu": "Võng",
     "phienAm": "wǎng",
     "yNghia": "Cái lưới",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 123,
@@ -982,7 +1104,8 @@ const RADICALS = [
     "tenBoThu": "Dương",
     "phienAm": "yáng",
     "yNghia": "Con dê",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 124,
@@ -990,7 +1113,8 @@ const RADICALS = [
     "tenBoThu": "Vũ",
     "phienAm": "yǚ",
     "yNghia": "Lông vũ",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 125,
@@ -998,7 +1122,8 @@ const RADICALS = [
     "tenBoThu": "Lão",
     "phienAm": "lǎo",
     "yNghia": "Già",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 126,
@@ -1006,7 +1131,8 @@ const RADICALS = [
     "tenBoThu": "Nhi",
     "phienAm": "ér",
     "yNghia": "Mà, và",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 127,
@@ -1014,7 +1140,8 @@ const RADICALS = [
     "tenBoThu": "Lỗi",
     "phienAm": "lěi",
     "yNghia": "Cái cày",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 128,
@@ -1022,7 +1149,8 @@ const RADICALS = [
     "tenBoThu": "Nhĩ",
     "phienAm": "ěr",
     "yNghia": "Lỗ tai",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 129,
@@ -1030,7 +1158,8 @@ const RADICALS = [
     "tenBoThu": "Duật",
     "phienAm": "yù",
     "yNghia": "Cây bút",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 130,
@@ -1038,7 +1167,8 @@ const RADICALS = [
     "tenBoThu": "Nhục",
     "phienAm": "ròu",
     "yNghia": "Thịt",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 131,
@@ -1046,7 +1176,8 @@ const RADICALS = [
     "tenBoThu": "Thần",
     "phienAm": "chén",
     "yNghia": "Bầy tôi",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 132,
@@ -1054,7 +1185,8 @@ const RADICALS = [
     "tenBoThu": "Tự",
     "phienAm": "zì",
     "yNghia": "Tự bản thân, kể từ",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 133,
@@ -1062,7 +1194,8 @@ const RADICALS = [
     "tenBoThu": "Chí",
     "phienAm": "zhì",
     "yNghia": "Đến",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 134,
@@ -1070,7 +1203,8 @@ const RADICALS = [
     "tenBoThu": "Cữu",
     "phienAm": "jiù",
     "yNghia": "Cái cối giã gạo",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 135,
@@ -1078,7 +1212,8 @@ const RADICALS = [
     "tenBoThu": "Thiệt",
     "phienAm": "shé",
     "yNghia": "Cái lưỡi",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 136,
@@ -1086,7 +1221,8 @@ const RADICALS = [
     "tenBoThu": "Suyễn",
     "phienAm": "chuǎn",
     "yNghia": "Sai lầm",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 137,
@@ -1094,7 +1230,8 @@ const RADICALS = [
     "tenBoThu": "Chu",
     "phienAm": "zhōu",
     "yNghia": "Cái thuyền",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 138,
@@ -1102,7 +1239,8 @@ const RADICALS = [
     "tenBoThu": "Cấn",
     "phienAm": "gèn",
     "yNghia": "quẻ Cấn (Kinh Dịch), dừng, bền cứng",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 139,
@@ -1110,7 +1248,8 @@ const RADICALS = [
     "tenBoThu": "Sắc",
     "phienAm": "sè",
     "yNghia": "Màu, dáng vẻ, nữ sắc",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 140,
@@ -1118,7 +1257,8 @@ const RADICALS = [
     "tenBoThu": "Thảo",
     "phienAm": "cǎo",
     "yNghia": "Cỏ",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 141,
@@ -1126,7 +1266,8 @@ const RADICALS = [
     "tenBoThu": "Hổ",
     "phienAm": "hū",
     "yNghia": "Vằn vện của con hổ",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 142,
@@ -1134,7 +1275,8 @@ const RADICALS = [
     "tenBoThu": "Trùng",
     "phienAm": "chóng",
     "yNghia": "Sâu bọ",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 143,
@@ -1142,7 +1284,8 @@ const RADICALS = [
     "tenBoThu": "Huyết",
     "phienAm": "xuè",
     "yNghia": "Máu",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 144,
@@ -1150,7 +1293,8 @@ const RADICALS = [
     "tenBoThu": "Hành",
     "phienAm": "xíng",
     "yNghia": "Đi, thi hành, làm được",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 145,
@@ -1158,7 +1302,8 @@ const RADICALS = [
     "tenBoThu": "Y",
     "phienAm": "yī",
     "yNghia": "Áo",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 146,
@@ -1166,7 +1311,8 @@ const RADICALS = [
     "tenBoThu": "Á",
     "phienAm": "yà",
     "yNghia": "Che đậy, úp lên",
-    "soNet": 6
+    "soNet": 6,
+    "ghepTu": []
   },
   {
     "stt": 147,
@@ -1174,7 +1320,8 @@ const RADICALS = [
     "tenBoThu": "Kiến",
     "phienAm": "jiàn",
     "yNghia": "Trông thấy",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 148,
@@ -1182,7 +1329,8 @@ const RADICALS = [
     "tenBoThu": "Giác",
     "phienAm": "jué",
     "yNghia": "Góc, sừng thú",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 149,
@@ -1190,7 +1338,8 @@ const RADICALS = [
     "tenBoThu": "Ngôn",
     "phienAm": "yán",
     "yNghia": "Nói",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 150,
@@ -1198,7 +1347,8 @@ const RADICALS = [
     "tenBoThu": "Cốc",
     "phienAm": "gǔ",
     "yNghia": "Khe nước chảy giữa hai núi, thung lũng",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 151,
@@ -1206,7 +1356,8 @@ const RADICALS = [
     "tenBoThu": "Đậu",
     "phienAm": "dòu",
     "yNghia": "Hạt đậu, cây đậu",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 152,
@@ -1214,7 +1365,8 @@ const RADICALS = [
     "tenBoThu": "Thỉ",
     "phienAm": "shǐ",
     "yNghia": "Con heo, con lợn",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 153,
@@ -1222,7 +1374,8 @@ const RADICALS = [
     "tenBoThu": "Trãi",
     "phienAm": "zhì",
     "yNghia": "Loài sâu không chân",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 154,
@@ -1230,7 +1383,8 @@ const RADICALS = [
     "tenBoThu": "Bối",
     "phienAm": "bèi",
     "yNghia": "Vật báu",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 155,
@@ -1238,7 +1392,8 @@ const RADICALS = [
     "tenBoThu": "Xích",
     "phienAm": "chì",
     "yNghia": "Màu đỏ",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 156,
@@ -1246,7 +1401,8 @@ const RADICALS = [
     "tenBoThu": "Tẩu",
     "phienAm": "zǒu",
     "yNghia": "Đi, chạy",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 157,
@@ -1254,7 +1410,8 @@ const RADICALS = [
     "tenBoThu": "Túc",
     "phienAm": "zú",
     "yNghia": "Chân, đầy đủ",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 158,
@@ -1262,7 +1419,8 @@ const RADICALS = [
     "tenBoThu": "Thân",
     "phienAm": "shēn",
     "yNghia": "Thân thể, thân mình",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 159,
@@ -1270,7 +1428,8 @@ const RADICALS = [
     "tenBoThu": "Xa",
     "phienAm": "chē",
     "yNghia": "Chiếc xe",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 160,
@@ -1278,7 +1437,8 @@ const RADICALS = [
     "tenBoThu": "Tân",
     "phienAm": "xīn",
     "yNghia": "Cay",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 161,
@@ -1286,7 +1446,8 @@ const RADICALS = [
     "tenBoThu": "Thần",
     "phienAm": "chén",
     "yNghia": "Nhật, nguyệt, tinh; thìn (12 chi)",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 162,
@@ -1294,7 +1455,8 @@ const RADICALS = [
     "tenBoThu": "Sước",
     "phienAm": "chuò",
     "yNghia": "Chợt bước đi chợt dừng lại",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 163,
@@ -1302,7 +1464,8 @@ const RADICALS = [
     "tenBoThu": "Ấp",
     "phienAm": "yì",
     "yNghia": "Vùng đất, đất phong cho quan",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 164,
@@ -1310,7 +1473,8 @@ const RADICALS = [
     "tenBoThu": "Dậu",
     "phienAm": "yǒu",
     "yNghia": "Một trong 12 địa chi",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 165,
@@ -1318,7 +1482,8 @@ const RADICALS = [
     "tenBoThu": "Biện",
     "phienAm": "biàn",
     "yNghia": "Phân biệt",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 166,
@@ -1326,7 +1491,8 @@ const RADICALS = [
     "tenBoThu": "Lý",
     "phienAm": "lǐ",
     "yNghia": "Dặm; làng xóm",
-    "soNet": 7
+    "soNet": 7,
+    "ghepTu": []
   },
   {
     "stt": 167,
@@ -1334,7 +1500,8 @@ const RADICALS = [
     "tenBoThu": "Kim",
     "phienAm": "jīn",
     "yNghia": "Kim loại nói chung, vàng",
-    "soNet": 8
+    "soNet": 8,
+    "ghepTu": []
   },
   {
     "stt": 168,
@@ -1342,7 +1509,8 @@ const RADICALS = [
     "tenBoThu": "Trường",
     "phienAm": "cháng",
     "yNghia": "Dài, lớn (trưởng)",
-    "soNet": 8
+    "soNet": 8,
+    "ghepTu": []
   },
   {
     "stt": 169,
@@ -1350,7 +1518,8 @@ const RADICALS = [
     "tenBoThu": "Môn",
     "phienAm": "mén",
     "yNghia": "Cửa hai cánh",
-    "soNet": 8
+    "soNet": 8,
+    "ghepTu": []
   },
   {
     "stt": 170,
@@ -1358,7 +1527,8 @@ const RADICALS = [
     "tenBoThu": "Phụ",
     "phienAm": "fù",
     "yNghia": "Đống đất, gò đất",
-    "soNet": 8
+    "soNet": 8,
+    "ghepTu": []
   },
   {
     "stt": 171,
@@ -1366,7 +1536,8 @@ const RADICALS = [
     "tenBoThu": "Đãi",
     "phienAm": "dài",
     "yNghia": "Kịp, kịp đến",
-    "soNet": 8
+    "soNet": 8,
+    "ghepTu": []
   },
   {
     "stt": 172,
@@ -1374,7 +1545,8 @@ const RADICALS = [
     "tenBoThu": "Truy,",
     "phienAm": "chuy",
     "yNghia": "zhuī Chim non",
-    "soNet": 8
+    "soNet": 8,
+    "ghepTu": []
   },
   {
     "stt": 173,
@@ -1382,7 +1554,8 @@ const RADICALS = [
     "tenBoThu": "Vũ",
     "phienAm": "yǔ",
     "yNghia": "Mưa",
-    "soNet": 8
+    "soNet": 8,
+    "ghepTu": []
   },
   {
     "stt": 174,
@@ -1390,7 +1563,8 @@ const RADICALS = [
     "tenBoThu": "Thanh",
     "phienAm": "qīng",
     "yNghia": "Màu xanh",
-    "soNet": 8
+    "soNet": 8,
+    "ghepTu": []
   },
   {
     "stt": 175,
@@ -1398,7 +1572,8 @@ const RADICALS = [
     "tenBoThu": "Phi",
     "phienAm": "fēi",
     "yNghia": "Không",
-    "soNet": 8
+    "soNet": 8,
+    "ghepTu": []
   },
   {
     "stt": 176,
@@ -1406,7 +1581,8 @@ const RADICALS = [
     "tenBoThu": "Diện",
     "phienAm": "miàn",
     "yNghia": "Mặt, bề mặt",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 177,
@@ -1414,7 +1590,8 @@ const RADICALS = [
     "tenBoThu": "Cách",
     "phienAm": "gé",
     "yNghia": "Da thú, thay đổi",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 178,
@@ -1422,7 +1599,8 @@ const RADICALS = [
     "tenBoThu": "Vi",
     "phienAm": "wéi",
     "yNghia": "Da đã thuộc rồi",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 179,
@@ -1430,7 +1608,8 @@ const RADICALS = [
     "tenBoThu": "Phỉ, cửu",
     "phienAm": "jiǔ",
     "yNghia": "Rau hẹ",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 180,
@@ -1438,7 +1617,8 @@ const RADICALS = [
     "tenBoThu": "Âm",
     "phienAm": "yīn",
     "yNghia": "Âm thanh, tiếng",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 181,
@@ -1446,7 +1626,8 @@ const RADICALS = [
     "tenBoThu": "Hiệt",
     "phienAm": "yè",
     "yNghia": "Đầu; trang giấy",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 182,
@@ -1454,7 +1635,8 @@ const RADICALS = [
     "tenBoThu": "Phong",
     "phienAm": "fēng",
     "yNghia": "Gió",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 183,
@@ -1462,7 +1644,8 @@ const RADICALS = [
     "tenBoThu": "Phi",
     "phienAm": "fēi",
     "yNghia": "Bay",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 184,
@@ -1470,7 +1653,8 @@ const RADICALS = [
     "tenBoThu": "Thực",
     "phienAm": "shí",
     "yNghia": "Ăn",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 185,
@@ -1478,7 +1662,8 @@ const RADICALS = [
     "tenBoThu": "Thủ",
     "phienAm": "shǒu",
     "yNghia": "Đầu",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 186,
@@ -1486,7 +1671,8 @@ const RADICALS = [
     "tenBoThu": "Hương",
     "phienAm": "xiāng",
     "yNghia": "Mùi thơm",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 187,
@@ -1494,7 +1680,8 @@ const RADICALS = [
     "tenBoThu": "Mã",
     "phienAm": "mǎ",
     "yNghia": "Con ngựa",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 188,
@@ -1502,7 +1689,8 @@ const RADICALS = [
     "tenBoThu": "Cốt",
     "phienAm": "gǔ",
     "yNghia": "Xương",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 189,
@@ -1510,7 +1698,8 @@ const RADICALS = [
     "tenBoThu": "Cao",
     "phienAm": "gāo",
     "yNghia": "Cao",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 190,
@@ -1518,7 +1707,8 @@ const RADICALS = [
     "tenBoThu": "Bưu, tiêu",
     "phienAm": "biāo",
     "yNghia": "Tóc dài",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 191,
@@ -1526,7 +1716,8 @@ const RADICALS = [
     "tenBoThu": "Đấu",
     "phienAm": "dòu",
     "yNghia": "Đánh nhau",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 192,
@@ -1534,7 +1725,8 @@ const RADICALS = [
     "tenBoThu": "Sưởng",
     "phienAm": "chàng",
     "yNghia": "Ủ rượu nếp",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 193,
@@ -1542,7 +1734,8 @@ const RADICALS = [
     "tenBoThu": "Cách",
     "phienAm": "gé",
     "yNghia": "Nồi, chõ",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 194,
@@ -1550,7 +1743,8 @@ const RADICALS = [
     "tenBoThu": "Quỷ",
     "phienAm": "gǔi",
     "yNghia": "Con quỷ",
-    "soNet": 9
+    "soNet": 9,
+    "ghepTu": []
   },
   {
     "stt": 195,
@@ -1558,7 +1752,8 @@ const RADICALS = [
     "tenBoThu": "Ngư",
     "phienAm": "yú",
     "yNghia": "Con cá",
-    "soNet": 11
+    "soNet": 11,
+    "ghepTu": []
   },
   {
     "stt": 196,
@@ -1566,7 +1761,8 @@ const RADICALS = [
     "tenBoThu": "Điểu",
     "phienAm": "niǎo",
     "yNghia": "Con chim",
-    "soNet": 11
+    "soNet": 11,
+    "ghepTu": []
   },
   {
     "stt": 197,
@@ -1574,7 +1770,8 @@ const RADICALS = [
     "tenBoThu": "Lỗ",
     "phienAm": "lǔ",
     "yNghia": "Đất mặn",
-    "soNet": 11
+    "soNet": 11,
+    "ghepTu": []
   },
   {
     "stt": 198,
@@ -1582,7 +1779,8 @@ const RADICALS = [
     "tenBoThu": "Lộc",
     "phienAm": "lù",
     "yNghia": "Con hươu",
-    "soNet": 11
+    "soNet": 11,
+    "ghepTu": []
   },
   {
     "stt": 199,
@@ -1590,7 +1788,8 @@ const RADICALS = [
     "tenBoThu": "Mạch",
     "phienAm": "mò",
     "yNghia": "Lúa mạch",
-    "soNet": 11
+    "soNet": 11,
+    "ghepTu": []
   },
   {
     "stt": 200,
@@ -1598,7 +1797,8 @@ const RADICALS = [
     "tenBoThu": "Ma",
     "phienAm": "má",
     "yNghia": "Cây gai",
-    "soNet": 11
+    "soNet": 11,
+    "ghepTu": []
   },
   {
     "stt": 201,
@@ -1606,7 +1806,8 @@ const RADICALS = [
     "tenBoThu": "Hoàng",
     "phienAm": "huáng",
     "yNghia": "Màu vàng",
-    "soNet": 12
+    "soNet": 12,
+    "ghepTu": []
   },
   {
     "stt": 202,
@@ -1614,7 +1815,8 @@ const RADICALS = [
     "tenBoThu": "Thử",
     "phienAm": "shǔ",
     "yNghia": "Lúa nếp",
-    "soNet": 12
+    "soNet": 12,
+    "ghepTu": []
   },
   {
     "stt": 203,
@@ -1622,7 +1824,8 @@ const RADICALS = [
     "tenBoThu": "Hắc",
     "phienAm": "hēi",
     "yNghia": "Màu đen",
-    "soNet": 12
+    "soNet": 12,
+    "ghepTu": []
   },
   {
     "stt": 204,
@@ -1630,7 +1833,8 @@ const RADICALS = [
     "tenBoThu": "Chỉ",
     "phienAm": "zhǐ",
     "yNghia": "May áo, khâu vá",
-    "soNet": 12
+    "soNet": 12,
+    "ghepTu": []
   },
   {
     "stt": 205,
@@ -1638,7 +1842,8 @@ const RADICALS = [
     "tenBoThu": "Mãnh",
     "phienAm": "mǐn",
     "yNghia": "Loài bò sát",
-    "soNet": 13
+    "soNet": 13,
+    "ghepTu": []
   },
   {
     "stt": 206,
@@ -1646,7 +1851,8 @@ const RADICALS = [
     "tenBoThu": "Đỉnh",
     "phienAm": "dǐng",
     "yNghia": "Cái đỉnh",
-    "soNet": 13
+    "soNet": 13,
+    "ghepTu": []
   },
   {
     "stt": 207,
@@ -1654,7 +1860,8 @@ const RADICALS = [
     "tenBoThu": "Cổ",
     "phienAm": "gǔ",
     "yNghia": "Cái trống",
-    "soNet": 13
+    "soNet": 13,
+    "ghepTu": []
   },
   {
     "stt": 208,
@@ -1662,7 +1869,8 @@ const RADICALS = [
     "tenBoThu": "Thử",
     "phienAm": "shǔ",
     "yNghia": "Con chuột",
-    "soNet": 13
+    "soNet": 13,
+    "ghepTu": []
   },
   {
     "stt": 209,
@@ -1670,7 +1878,8 @@ const RADICALS = [
     "tenBoThu": "tỵ",
     "phienAm": "bí",
     "yNghia": "cái mũi",
-    "soNet": 14
+    "soNet": 14,
+    "ghepTu": []
   },
   {
     "stt": 210,
@@ -1678,7 +1887,8 @@ const RADICALS = [
     "tenBoThu": "tề",
     "phienAm": "qí",
     "yNghia": "bằng nhau",
-    "soNet": 14
+    "soNet": 14,
+    "ghepTu": []
   },
   {
     "stt": 211,
@@ -1686,7 +1896,8 @@ const RADICALS = [
     "tenBoThu": "Xỉ",
     "phienAm": "chǐ",
     "yNghia": "Răng",
-    "soNet": 15
+    "soNet": 15,
+    "ghepTu": []
   },
   {
     "stt": 212,
@@ -1694,7 +1905,8 @@ const RADICALS = [
     "tenBoThu": "long",
     "phienAm": "lóng",
     "yNghia": "con rồng",
-    "soNet": 16
+    "soNet": 16,
+    "ghepTu": []
   },
   {
     "stt": 213,
@@ -1702,7 +1914,8 @@ const RADICALS = [
     "tenBoThu": "quy",
     "phienAm": "guī",
     "yNghia": "con rùa",
-    "soNet": 16
+    "soNet": 16,
+    "ghepTu": []
   },
   {
     "stt": 214,
@@ -1710,7 +1923,8 @@ const RADICALS = [
     "tenBoThu": "Dược",
     "phienAm": "yuè",
     "yNghia": "sáo ba lỗ",
-    "soNet": 17
+    "soNet": 17,
+    "ghepTu": []
   }
 ];
 

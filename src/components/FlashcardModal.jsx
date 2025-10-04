@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Square, ChevronLeft, ChevronRight, ChevronsLeft, Volume2, X, ArrowLeft, ArrowRight } from "lucide-react";
+import { useSwipe } from '../hooks/useSwipe';
 
 const SmallButton = ({ icon, text, onClick, disabled=false }) => (
   <Button variant="outline" className="rounded-2xl px-5" onClick={onClick} disabled={disabled}>
@@ -12,7 +13,7 @@ const SmallButton = ({ icon, text, onClick, disabled=false }) => (
 const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
   if (!images || images.length === 0) {
     return (
-      <div className="w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 bg-gray-100 rounded-xl flex items-center justify-center">
+      <div className="w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 bg-gray-100 rounded-xl flex items-center justify-center">
         <span className="text-gray-400 text-lg">No Image</span>
       </div>
     );
@@ -20,7 +21,7 @@ const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
 
   if (images.length === 1) {
     return (
-      <div className="w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
+      <div className="w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
         <img 
           src={`/images/${images[0]}`} 
           alt={`Bộ thủ hình ảnh`}
@@ -46,7 +47,7 @@ const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
   };
 
   return (
-    <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 bg-gray-100 rounded-xl overflow-hidden">
+    <div className="relative w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 bg-gray-100 rounded-xl overflow-hidden">
       <img 
         src={`/images/${images[currentIndex]}`} 
         alt={`Bộ thủ hình ảnh ${currentIndex + 1}`}
@@ -122,6 +123,9 @@ const FlashcardModal = ({
     setSlideDirection('next');
     onGoNext();
   };
+
+  // Swipe gestures
+  const swipeHandlers = useSwipe(handleGoNext, handleGoPrev);
 
   // Helper function to get radical by STT
   const getRadicalByStt = (stt) => {
@@ -200,11 +204,11 @@ const FlashcardModal = ({
 
         {/* Flashcard */}
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-          <Card className="border-0 shadow-none">
-            <CardContent className="p-8 md:p-12">
+          <Card className="border-0 shadow-none touch-pan-y" {...swipeHandlers}>
+            <CardContent className="p-4 sm:p-8 md:p-12">
               <div ref={slideRef}>
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start items-center gap-4 mb-8 pt-12 sm:pt-0">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start items-center gap-4 mb-4 sm:mb-8 sm:pt-0">
                   <div className="text-gray-500 text-lg font-medium">
                     {currentIndex + 1} / {total}
                   </div>
@@ -220,9 +224,9 @@ const FlashcardModal = ({
                 </div>
 
                 {/* Main content */}
-                <div className="text-center mb-12">
+                <div className="text-center mb-6 sm:mb-12">
                   {/* Image as center focus */}
-                  <div className="flex justify-center mb-8">
+                  <div className="flex justify-center mb-4 sm:mb-8">
                     <ImageCarousel 
                       images={currentRadical.hinhAnh}
                       currentIndex={currentImageIndex}
@@ -231,29 +235,29 @@ const FlashcardModal = ({
                   </div>
                   
                   {/* Radical character */}
-                  <div className="text-emerald-700 text-9xl md:text-[12rem] font-bold mb-6">
+                  <div className="text-emerald-700 text-6xl sm:text-9xl md:text-[12rem] font-bold mb-3 sm:mb-6">
                     {currentRadical.boThu}
                   </div>
                   
                   {/* Supporting information */}
-                  <div className="italic text-2xl md:text-3xl mb-6 text-gray-700">
+                  <div className="italic text-lg sm:text-2xl md:text-3xl mb-3 sm:mb-6 text-gray-700">
                     {currentRadical.tenBoThu} • {currentRadical.phienAm}
                   </div>
                   
-                  <div className="text-xl md:text-2xl text-gray-600 mb-6">
+                  <div className="text-base sm:text-xl md:text-2xl text-gray-600 mb-4 sm:mb-6">
                     {currentRadical.yNghia}
                   </div>
                   
                   {/* GhepTu information */}
                   {formatGhepTu(currentRadical.ghepTu) && (
-                    <div className="text-lg text-blue-600 bg-blue-50 px-4 py-3 rounded-xl inline-block">
+                    <div className="text-sm sm:text-lg text-blue-600 bg-blue-50 px-3 py-2 sm:px-4 sm:py-3 rounded-xl inline-block">
                       {formatGhepTu(currentRadical.ghepTu)}
                     </div>
                   )}
                 </div>
 
               {/* Controls */}
-              <div className="flex flex-wrap gap-4 justify-center">
+              <div className="flex flex-wrap gap-4 justify-center pb-8">
                 <Button 
                   variant={isPlaying ? "destructive" : "default"} 
                   className="rounded-2xl px-8 py-3 text-lg" 

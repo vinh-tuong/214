@@ -140,7 +140,7 @@ const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
 
 export default function App() {
   const [allData] = useState(RADICALS);
-  const [stroke, setStroke] = useState(1);
+  const [stroke, setStroke] = useState('popular');
   const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -172,10 +172,27 @@ export default function App() {
     ];
     return allData.filter(item => popularStt.includes(item.stt));
   }, [allData]);
+
+  // Create all group with all 214 radicals
+  const allGroup = useMemo(() => {
+    return [...allData]; // All radicals in original order
+  }, [allData]);
+
+  // Create random group with all radicals shuffled
+  const randomGroup = useMemo(() => {
+    const shuffled = [...allData];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }, [allData, stroke]); // Re-shuffle when stroke changes to 'random'
   
   // Determine current group based on stroke value
   const currentGroup = stroke === 'difficult' ? difficultGroup : 
                       stroke === 'popular' ? popularGroup : 
+                      stroke === 'all' ? allGroup :
+                      stroke === 'random' ? randomGroup :
                       (groups[stroke] ?? []);
   const total = currentGroup.length;
   const cur = currentGroup[idx] ?? null;
@@ -288,14 +305,18 @@ export default function App() {
 
         <section className="mt-4 grid md:grid-cols-[260px_1fr] gap-6">
           <aside className="space-y-4">
-            <div className="p-4 bg-white rounded-2xl shadow">
+            <div className="p-4 sm:p-6 bg-white rounded-2xl shadow">
               <div className="text-sm text-gray-600 mb-2">Nhóm theo số nét</div>
               <div className="flex flex-wrap gap-2 max-w-full overflow-hidden">
                 {/* Difficult group button */}
                 <Button
                   key="popular"
                   variant={stroke==="popular"?"default":"outline"}
-                  className="rounded-full h-9 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 text-xs sm:text-sm whitespace-nowrap"
+                  className={`rounded-full h-9 text-xs sm:text-sm whitespace-nowrap ${
+                    stroke === "popular"
+                      ? "bg-blue-500 text-white border-blue-500 hover:bg-blue-600"
+                      : "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                  }`}
                   onClick={()=>setStroke("popular")}
                 >
                   🔥 Popular ({popularGroup.length})
@@ -303,7 +324,11 @@ export default function App() {
                 <Button
                   key="difficult"
                   variant={stroke==="difficult"?"default":"outline"}
-                  className="rounded-full h-9 bg-red-50 border-red-200 text-red-700 hover:bg-red-100 text-xs sm:text-sm whitespace-nowrap"
+                  className={`rounded-full h-9 text-xs sm:text-sm whitespace-nowrap ${
+                    stroke === "difficult"
+                      ? "bg-blue-500 text-white border-blue-500 hover:bg-blue-600"
+                      : "bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                  }`}
                   onClick={()=>setStroke("difficult")}
                 >
                   ⭐ Difficult ({difficultGroup.length})
@@ -311,19 +336,46 @@ export default function App() {
                 
                 {/* Stroke count buttons */}
                 {strokesAvailable.map((n) => (
-                  <Button key={n} variant={stroke===n?"default":"outline"} className="rounded-full h-9 text-xs sm:text-sm whitespace-nowrap" onClick={()=>setStroke(n)}>
+                  <Button 
+                    key={n} 
+                    variant={stroke===n?"default":"outline"} 
+                    className={`rounded-full h-9 text-xs sm:text-sm whitespace-nowrap ${
+                      stroke === n 
+                        ? "bg-blue-500 text-white border-blue-500 hover:bg-blue-600" 
+                        : "hover:bg-gray-50"
+                    }`} 
+                    onClick={()=>setStroke(n)}
+                  >
                     {n} nét ({groups[n].length})
                   </Button>
                 ))}
+                
+                {/* Additional group buttons */}
+                <Button
+                  key="all"
+                  variant={stroke==="all"?"default":"outline"}
+                  className={`rounded-full h-9 text-xs sm:text-sm whitespace-nowrap ${
+                    stroke === "all"
+                      ? "bg-blue-500 text-white border-blue-500 hover:bg-blue-600"
+                      : "bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                  }`}
+                  onClick={()=>setStroke("all")}
+                >
+                  📚 Tất cả ({allGroup.length})
+                </Button>
+                <Button
+                  key="random"
+                  variant={stroke==="random"?"default":"outline"}
+                  className={`rounded-full h-9 text-xs sm:text-sm whitespace-nowrap ${
+                    stroke === "random"
+                      ? "bg-blue-500 text-white border-blue-500 hover:bg-blue-600"
+                      : "bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
+                  }`}
+                  onClick={()=>setStroke("random")}
+                >
+                  🎲 Ngẫu nhiên ({randomGroup.length})
+                </Button>
               </div>
-            </div>
-
-            <div className="p-4 bg-white rounded-2xl shadow text-sm text-gray-600 leading-relaxed">
-              <p>Nút Play sẽ tự động chuyển thẻ mỗi 3s. Bạn có thể đánh dấu "difficult?" để ôn tập.</p>
-              <p className="mt-2">Nút Audio sẽ đọc bộ thủ bằng tiếng Trung (hỗ trợ trình duyệt hiện đại).</p>
-              <p className="mt-2"><strong>Popular:</strong> 50 bộ thủ phổ biến nhất trong tiếng Trung.</p>
-              <p className="mt-2"><strong>Difficult:</strong> Nhóm bộ thủ bạn đánh dấu khó để ôn tập.</p>
-              <p className="mt-2">Nguồn dữ liệu: từ và nghĩa được lấy từ 214 bộ thủ tiếng Trung – ThanhMaiHSK. Hình ảnh được lấy từ Radical Images — Pichinese.</p>
             </div>
           </aside>
 
@@ -415,6 +467,10 @@ export default function App() {
                   ? 'Chưa có bộ thủ nào được đánh dấu difficult.'
                   : stroke === 'popular'
                   ? 'Nhóm Popular chứa 50 bộ thủ phổ biến nhất.'
+                  : stroke === 'all'
+                  ? 'Nhóm Tất cả chứa đầy đủ 214 bộ thủ theo thứ tự.'
+                  : stroke === 'random'
+                  ? 'Nhóm Ngẫu nhiên chứa đầy đủ 214 bộ thủ được xáo trộn.'
                   : `Không có dữ liệu cho nhóm ${stroke} nét.`
                 }
               </div>
@@ -422,9 +478,25 @@ export default function App() {
           </main>
         </section>
 
+        {/* Information Section */}
+        <div className="mt-8 p-4 bg-white rounded-2xl shadow text-sm text-gray-600 leading-relaxed">
+          <div className="space-y-3">
+            <p><strong>Nút Play</strong> sẽ tự động chuyển thẻ mỗi 3s. Bạn có thể đánh dấu "difficult?" để ôn tập.</p>
+            <p><strong>Nút Audio</strong> sẽ đọc bộ thủ bằng tiếng Trung (hỗ trợ trình duyệt hiện đại).</p>
+            <p><strong>Popular:</strong> 50 bộ thủ phổ biến nhất trong tiếng Trung.</p>
+            <p><strong>Tất cả:</strong> Đầy đủ 214 bộ thủ theo thứ tự từ 1 đến 17 nét.</p>
+            <p><strong>Ngẫu nhiên:</strong> Đầy đủ 214 bộ thủ được xáo trộn ngẫu nhiên.</p>
+            <p><strong>Difficult:</strong> Nhóm bộ thủ bạn đánh dấu khó để ôn tập.</p>
+            <p className="text-xs text-gray-500 mt-4">
+              <strong>Nguồn dữ liệu:</strong> từ và nghĩa được lấy từ 214 bộ thủ tiếng Trung – ThanhMaiHSK. Hình ảnh được lấy từ Radical Images — Pichinese.
+            </p>
+          </div>
+        </div>
+
         <footer className="mt-8 text-xs text-gray-500">
           <p>© 2025 – Flashcards Bộ thủ. Tự động chạy: 3 giây / thẻ. Hiệu ứng trượt trái → phải.</p>
           <p className="mt-1">💡 Trên mobile: Vuốt trái/phải trên thẻ để chuyển slide.</p>
+          <p className="mt-8 text-center text-gray-400">From Munich with love ❤️</p>
         </footer>
       </div>
 

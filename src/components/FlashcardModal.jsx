@@ -11,6 +11,40 @@ const SmallButton = ({ icon, text, onClick, disabled=false }) => (
 );
 
 const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [preloadedImages, setPreloadedImages] = useState(new Set());
+
+  // Preload next and previous images
+  useEffect(() => {
+    if (!images || images.length === 0) return;
+
+    const preloadImage = (src) => {
+      if (preloadedImages.has(src)) return;
+      
+      const img = new Image();
+      img.onload = () => {
+        setPreloadedImages(prev => new Set([...prev, src]));
+      };
+      img.src = `/images/${src}`;
+    };
+
+    // Preload current, next, and previous images
+    const currentImage = images[currentIndex];
+    const nextIndex = (currentIndex + 1) % images.length;
+    const prevIndex = (currentIndex - 1 + images.length) % images.length;
+    
+    preloadImage(currentImage);
+    if (images.length > 1) {
+      preloadImage(images[nextIndex]);
+      preloadImage(images[prevIndex]);
+    }
+  }, [images, currentIndex, preloadedImages]);
+
+  // Reset loading state when image changes
+  useEffect(() => {
+    setImageLoaded(false);
+  }, [currentIndex]);
+
   if (!images || images.length === 0) {
     return (
       <div className="w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 bg-gray-100 rounded-xl flex items-center justify-center">
@@ -21,11 +55,17 @@ const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
 
   if (images.length === 1) {
     return (
-      <div className="w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
+      <div className="w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden relative">
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
         <img 
           src={`/images/${images[0]}`} 
           alt={`Bộ thủ hình ảnh`}
-          className="w-full h-full object-contain"
+          className={`w-full h-full object-contain transition-opacity duration-200 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={() => setImageLoaded(true)}
           onError={(e) => {
             e.target.style.display = 'none';
             e.target.nextSibling.style.display = 'flex';
@@ -48,10 +88,16 @@ const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
 
   return (
     <div className="relative w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 bg-gray-100 rounded-xl overflow-hidden">
+      {!imageLoaded && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center z-10">
+          <div className="w-8 h-8 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
       <img 
         src={`/images/${images[currentIndex]}`} 
         alt={`Bộ thủ hình ảnh ${currentIndex + 1}`}
-        className="w-full h-full object-contain"
+        className={`w-full h-full object-contain transition-opacity duration-200 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+        onLoad={() => setImageLoaded(true)}
         onError={(e) => {
           e.target.style.display = 'none';
           e.target.nextSibling.style.display = 'flex';
@@ -110,7 +156,7 @@ const FlashcardModal = ({
 
   // Navigation wrappers to set direction
   const handleGoFirst = () => {
-    setSlideDirection('next');
+    setSlideDirection('prev');
     onGoFirst();
   };
   
@@ -138,7 +184,7 @@ const FlashcardModal = ({
     
     const components = ghepTu.map(stt => {
       const radical = getRadicalByStt(stt);
-      return radical ? `${radical.boThu} (${stt})` : `STT ${stt}`;
+      return radical ? `${radical.boThu} (${radical.tenBoThu})` : `STT ${stt}`;
     });
     
     return `Ghép từ: ${components.join(' và ')}`;
@@ -178,9 +224,9 @@ const FlashcardModal = ({
     const isNextSlide = slideDirection === 'next';
     
     slideRef.current.animate([
-      { transform: isNextSlide ? 'translateX(30px)' : 'translateX(-30px)', opacity: 0.7 },
+      { transform: isNextSlide ? 'translateX(120px)' : 'translateX(-120px)', opacity: 0.7 },
       { transform: 'translateX(0px)', opacity: 1 }
-    ], { duration: 400, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' });
+    ], { duration: 300, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' });
   }, [currentIndex, slideDirection]);
 
   if (!isOpen || !currentRadical) return null;
@@ -224,7 +270,7 @@ const FlashcardModal = ({
                 </div>
 
                 {/* Main content */}
-                <div className="text-center mb-6 sm:mb-12">
+                <div className="text-center mb-4 sm:mb-6">
                   {/* Image as center focus */}
                   <div className="flex justify-center mb-4 sm:mb-8">
                     <ImageCarousel 
@@ -235,16 +281,16 @@ const FlashcardModal = ({
                   </div>
                   
                   {/* Radical character */}
-                  <div className="text-emerald-700 text-6xl sm:text-9xl md:text-[12rem] font-bold mb-3 sm:mb-6">
+                  <div className="text-emerald-700 text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold mb-3 sm:mb-6">
                     {currentRadical.boThu}
                   </div>
                   
                   {/* Supporting information */}
-                  <div className="italic text-lg sm:text-2xl md:text-3xl mb-3 sm:mb-6 text-gray-700">
+                  <div className="italic text-lg sm:text-xl md:text-2xl mb-3 sm:mb-6 text-gray-700">
                     {currentRadical.tenBoThu} • {currentRadical.phienAm}
                   </div>
                   
-                  <div className="text-base sm:text-xl md:text-2xl text-gray-600 mb-4 sm:mb-6">
+                  <div className="text-base sm:text-lg md:text-xl text-gray-600 mb-4 sm:mb-6">
                     {currentRadical.yNghia}
                   </div>
                   

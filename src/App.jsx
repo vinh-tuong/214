@@ -64,6 +64,40 @@ const SmallButton = ({ icon, text, onClick, disabled=false }) => (
 );
 
 const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [preloadedImages, setPreloadedImages] = useState(new Set());
+
+  // Preload next and previous images
+  useEffect(() => {
+    if (!images || images.length === 0) return;
+
+    const preloadImage = (src) => {
+      if (preloadedImages.has(src)) return;
+      
+      const img = new Image();
+      img.onload = () => {
+        setPreloadedImages(prev => new Set([...prev, src]));
+      };
+      img.src = `/images/${src}`;
+    };
+
+    // Preload current, next, and previous images
+    const currentImage = images[currentIndex];
+    const nextIndex = (currentIndex + 1) % images.length;
+    const prevIndex = (currentIndex - 1 + images.length) % images.length;
+    
+    preloadImage(currentImage);
+    if (images.length > 1) {
+      preloadImage(images[nextIndex]);
+      preloadImage(images[prevIndex]);
+    }
+  }, [images, currentIndex, preloadedImages]);
+
+  // Reset loading state when image changes
+  useEffect(() => {
+    setImageLoaded(false);
+  }, [currentIndex]);
+
   if (!images || images.length === 0) {
     return (
       <div className="w-48 h-48 sm:w-56 sm:h-56 bg-gray-100 rounded-xl flex items-center justify-center">
@@ -74,11 +108,17 @@ const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
 
   if (images.length === 1) {
     return (
-      <div className="w-48 h-48 sm:w-56 sm:h-56 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
+      <div className="w-48 h-48 sm:w-56 sm:h-56 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden relative">
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
         <img 
           src={`/images/${images[0]}`} 
           alt={`Bộ thủ hình ảnh`}
-          className="w-full h-full object-contain"
+          className={`w-full h-full object-contain transition-opacity duration-200 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={() => setImageLoaded(true)}
           onError={(e) => {
             e.target.style.display = 'none';
             e.target.nextSibling.style.display = 'flex';
@@ -101,10 +141,16 @@ const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
 
   return (
     <div className="relative w-48 h-48 sm:w-56 sm:h-56 bg-gray-100 rounded-xl overflow-hidden">
+      {!imageLoaded && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center z-10">
+          <div className="w-8 h-8 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
       <img 
         src={`/images/${images[currentIndex]}`} 
         alt={`Bộ thủ hình ảnh ${currentIndex + 1}`}
-        className="w-full h-full object-contain"
+        className={`w-full h-full object-contain transition-opacity duration-200 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+        onLoad={() => setImageLoaded(true)}
         onError={(e) => {
           e.target.style.display = 'none';
           e.target.nextSibling.style.display = 'flex';
@@ -203,6 +249,7 @@ export default function App() {
     if (!playing || total === 0) return;
     timer.current && clearInterval(timer.current);
     timer.current = setInterval(() => {
+      setSlideDirection('next');
       setIdx((i) => (i + 1) % total);
     }, 3000);
     return () => timer.current && clearInterval(timer.current);
@@ -220,7 +267,7 @@ export default function App() {
   }, [idx, stroke]);
 
   const goFirst = () => {
-    setSlideDirection('next');
+    setSlideDirection('prev');
     setIdx(0);
   };
   const goPrev = () => {
@@ -273,7 +320,7 @@ export default function App() {
     
     const components = ghepTu.map(stt => {
       const radical = getRadicalByStt(stt);
-      return radical ? `${radical.boThu} (${stt})` : `STT ${stt}`;
+      return radical ? `${radical.boThu} (${radical.tenBoThu})` : `STT ${stt}`;
     });
     
     return `Ghép từ: ${components.join(' và ')}`;
@@ -289,9 +336,9 @@ export default function App() {
     const isNextSlide = slideDirection === 'next';
     
     slideRef.current.animate([
-      { transform: isNextSlide ? 'translateX(30px)' : 'translateX(-30px)', opacity: 0.7 },
+      { transform: isNextSlide ? 'translateX(120px)' : 'translateX(-120px)', opacity: 0.7 },
       { transform: 'translateX(0px)', opacity: 1 }
-    ], { duration: 400, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' });
+    ], { duration: 300, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' });
   }, [idx, stroke, slideDirection]);
 
   const strokesAvailable = useMemo(() => Object.keys(groups).map(Number).sort((a,b)=>a-b), [groups]);
@@ -423,7 +470,10 @@ export default function App() {
                      </div>
 
                     <div className="mt-8 flex flex-wrap gap-2 sm:gap-3 justify-center">
-                      <Button variant={playing?"destructive":"default"} className="rounded-2xl text-sm" onClick={() => setPlaying(p=>!p)}>
+                      <Button variant={playing?"destructive":"default"} className="rounded-2xl text-sm" onClick={() => {
+                        setSlideDirection('next');
+                        setPlaying(p=>!p);
+                      }}>
                         {playing ? (<span className="flex items-center gap-1 sm:gap-2"><Square size={16}/><span className="hidden sm:inline">Stop</span></span>) : (<span className="flex items-center gap-1 sm:gap-2"><Play size={16}/><span className="hidden sm:inline">Play</span></span>)}
                       </Button>
                       
@@ -510,7 +560,10 @@ export default function App() {
         isPlaying={playing}
         isSpeaking={isSpeaking}
         isDifficult={isDiff}
-        onTogglePlay={() => setPlaying(p => !p)}
+        onTogglePlay={() => {
+          setSlideDirection('next');
+          setPlaying(p => !p);
+        }}
         onToggleDiff={toggleDiff}
         onSpeakRadical={speakRadical}
         onGoFirst={goFirst}

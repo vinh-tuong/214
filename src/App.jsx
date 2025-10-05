@@ -10,11 +10,11 @@ import FlashcardModal from "./components/FlashcardModal";
 
 // Utility function to extract all variants from boThu field
 const extractRadicalVariants = (boThu) => {
-  // Handle cases like "人 (亻)" -> ["人", "亻"]
+  // Handle cases like "人 (亻)" -> ["人", "亻"] or "齒(齿, 歯 )" -> ["齒", "齿", "歯"]
   const variants = [];
   
-  // Extract main radical (before parentheses)
-  const mainRadical = boThu.split(' (')[0];
+  // Extract main radical (before parentheses) - handle both " (..." and "(..." cases
+  const mainRadical = boThu.split(/[ (]/)[0];
   variants.push(mainRadical);
   
   // Extract variants in parentheses
@@ -419,6 +419,17 @@ export default function App() {
     return allData.find(item => item.stt === stt);
   };
 
+  // Create radical mapping once
+  const radicalMapping = useMemo(() => {
+    const mapping = createRadicalMapping();
+    // Debug: check if "齒" is in mapping
+    console.log('齒 in mapping:', mapping.has('齒'));
+    console.log('齒 mapping value:', mapping.get('齒'));
+    console.log('extractRadicalVariants("齒(齿, 歯 )"):', extractRadicalVariants("齒(齿, 歯 )"));
+    console.log('extractRadicalVariants("齊 (斉 , 齐)"):', extractRadicalVariants("齊 (斉 , 齐)"));
+    return mapping;
+  }, []);
+
   // Search function for character decomposition
   const handleSearch = useCallback(async (query) => {
     if (!query.trim()) {
@@ -432,17 +443,22 @@ export default function App() {
       const data = await response.json();
       
       if (response.ok && data.components && data.components.length > 0) {
-        // Create radical mapping
-        const radicalMapping = createRadicalMapping();
+        // Debug: log components
+        console.log('API components:', data.components);
         
         // Find radicals that match the decomposed components
         const matchingRadicals = data.components
-          .map(component => radicalMapping.get(component))
+          .map(component => {
+            const radical = radicalMapping.get(component);
+            console.log(`Component "${component}" -> radical:`, radical);
+            return radical;
+          })
           .filter(Boolean) // Remove undefined values
           .filter((radical, index, array) => 
             array.findIndex(r => r.stt === radical.stt) === index
           ); // Remove duplicates
         
+        console.log('Final matching radicals:', matchingRadicals);
         setSearchResults(matchingRadicals);
       } else {
         setSearchResults([]);

@@ -2,6 +2,7 @@
   "name": "chinese-radicals-flashcards",
   "version": "1.0.0",
   "description": "Flashcards ứng dụng học 214 bộ thủ tiếng Trung",
+  "engines": { "node": ">=22 <23" },
   "homepage": "https://your-app.vercel.app",
   "scripts": {
     "dev": "vite",
@@ -23,6 +24,7 @@
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.0.0",
+    "hanzi": "^2.1.5",
     "lucide-react": "^0.263.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

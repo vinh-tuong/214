@@ -1717,9 +1717,9 @@ const RADICALS = [
   {
     "stt": 172,
     "boThu": "隹",
-    "tenBoThu": "Truy,",
-    "phienAm": "chuy",
-    "yNghia": "zhuī Chim non",
+    "tenBoThu": "Truy, chuy",
+    "phienAm": "zhuī",
+    "yNghia": "Chim non",
     "soNet": 8,
     "ghepTu": [],
     "hinhAnh": ["Radical+images205.png"],

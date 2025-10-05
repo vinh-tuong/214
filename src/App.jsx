@@ -3,9 +3,52 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Square, ChevronLeft, ChevronRight, ChevronsLeft, Volume2, Monitor, ArrowLeft, ArrowRight } from "lucide-react";
 import RADICALS from "../radicals";
+import { VARIANT_TO_RADICAL } from "../radical-variants";
 import { useSpeechSynthesis } from "./hooks/useSpeechSynthesis";
 import { useSwipe } from "./hooks/useSwipe";
 import FlashcardModal from "./components/FlashcardModal";
+
+// Utility function to extract all variants from boThu field
+const extractRadicalVariants = (boThu) => {
+  // Handle cases like "人 (亻)" -> ["人", "亻"]
+  const variants = [];
+  
+  // Extract main radical (before parentheses)
+  const mainRadical = boThu.split(' (')[0];
+  variants.push(mainRadical);
+  
+  // Extract variants in parentheses
+  const parenthesesMatch = boThu.match(/\(([^)]+)\)/);
+  if (parenthesesMatch) {
+    const variantsInParens = parenthesesMatch[1].split(/[,，、]/);
+    variants.push(...variantsInParens.map(v => v.trim()));
+  }
+  
+  return variants;
+};
+
+// Create a mapping of all radical variants to radical data
+const createRadicalMapping = () => {
+  const mapping = new Map();
+  
+  RADICALS.forEach(radical => {
+    // Extract variants from boThu field (e.g., "人 (亻)" -> ["人", "亻"])
+    const variants = extractRadicalVariants(radical.boThu);
+    variants.forEach(variant => {
+      mapping.set(variant, radical);
+    });
+    
+    // Also map from VARIANT_TO_RADICAL if the canonical radical matches
+    const canonicalRadical = radical.boThu.split(' (')[0]; // Get main radical
+    Object.entries(VARIANT_TO_RADICAL).forEach(([variant, canonical]) => {
+      if (canonical === canonicalRadical) {
+        mapping.set(variant, radical);
+      }
+    });
+  });
+  
+  return mapping;
+};
 
 /**
  * Flashcards for 214 Chinese Radicals grouped by stroke count
@@ -184,6 +227,56 @@ const ImageCarousel = ({ images, currentIndex, onImageChange }) => {
   );
 };
 
+// Search Image Carousel Component
+const SearchImageCarousel = ({ images, currentIndex, onImageChange, alt }) => {
+  if (!images || images.length === 0) return null;
+  
+  if (images.length === 1) {
+    return (
+      <div className="flex justify-center">
+        <img
+          src={`/images/${images[0]}`}
+          alt={alt}
+          className="w-48 h-48 object-contain rounded-lg border"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex justify-center items-center gap-4">
+      <Button
+        onClick={() => onImageChange((currentIndex - 1 + images.length) % images.length)}
+        variant="outline"
+        size="sm"
+        className="rounded-full"
+      >
+        <ArrowLeft size={16} />
+      </Button>
+      
+      <div className="relative">
+        <img
+          src={`/images/${images[currentIndex]}`}
+          alt={alt}
+          className="w-48 h-48 object-contain rounded-lg border"
+        />
+        <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+          {currentIndex + 1}/{images.length}
+        </div>
+      </div>
+      
+      <Button
+        onClick={() => onImageChange((currentIndex + 1) % images.length)}
+        variant="outline"
+        size="sm"
+        className="rounded-full"
+      >
+        <ArrowRight size={16} />
+      </Button>
+    </div>
+  );
+};
+
 export default function App() {
   const [allData] = useState(RADICALS);
   const [stroke, setStroke] = useState('popular');
@@ -192,6 +285,13 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [slideDirection, setSlideDirection] = useState('next'); // 'next' or 'prev'
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [searchModalIndex, setSearchModalIndex] = useState(0);
+  const [searchModalImageIndex, setSearchModalImageIndex] = useState(0);
+  const [charDefinition, setCharDefinition] = useState(null);
   const [difficultSet, setDifficultSet] = useState(() => {
     // Load from localStorage on initialization
     const saved = localStorage.getItem('difficultRadicals');
@@ -266,6 +366,11 @@ export default function App() {
     setCurrentImageIndex(0);
   }, [idx, stroke]);
 
+  // Reset image index when changing radicals in search modal
+  useEffect(() => {
+    setSearchModalImageIndex(0);
+  }, [searchModalIndex]);
+
   const goFirst = () => {
     setSlideDirection('prev');
     setIdx(0);
@@ -314,6 +419,82 @@ export default function App() {
     return allData.find(item => item.stt === stt);
   };
 
+  // Search function for character decomposition
+  const handleSearch = useCallback(async (query) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(`/api/decompose?ch=${encodeURIComponent(query)}&level=2`);
+      const data = await response.json();
+      
+      if (response.ok && data.components && data.components.length > 0) {
+        // Create radical mapping
+        const radicalMapping = createRadicalMapping();
+        
+        // Find radicals that match the decomposed components
+        const matchingRadicals = data.components
+          .map(component => radicalMapping.get(component))
+          .filter(Boolean) // Remove undefined values
+          .filter((radical, index, array) => 
+            array.findIndex(r => r.stt === radical.stt) === index
+          ); // Remove duplicates
+        
+        setSearchResults(matchingRadicals);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  // Fetch character definition
+  const fetchCharDefinition = useCallback(async (char) => {
+    try {
+      const response = await fetch(`/api/define?char=${encodeURIComponent(char)}&variant=s`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch character definition');
+      }
+      const data = await response.json();
+      return data.entries || [];
+    } catch (error) {
+      console.error('Error fetching character definition:', error);
+      return [];
+    }
+  }, []);
+
+  // Manual search function
+  const handleManualSearch = useCallback(async () => {
+    if (!searchQuery.trim()) return;
+    
+    setIsSearching(true);
+    setCharDefinition(null);
+    
+    try {
+      // Search for radicals
+      await handleSearch(searchQuery);
+      
+      // Fetch character definition
+      const definition = await fetchCharDefinition(searchQuery);
+      setCharDefinition(definition);
+      
+      setIsSearchModalOpen(true);
+      setSearchModalIndex(0);
+      setSearchModalImageIndex(0);
+    } catch (error) {
+      console.error('Search error:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  }, [searchQuery, handleSearch, fetchCharDefinition]);
+
   // Helper function to format ghepTu information
   const formatGhepTu = (ghepTu) => {
     if (!ghepTu || ghepTu.length === 0) return null;
@@ -348,6 +529,29 @@ export default function App() {
       <div className="max-w-5xl mx-auto">
         <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <h1 className="text-2xl font-semibold">Flashcards 214 Bộ thủ – nhóm theo số nét</h1>
+          
+          {/* Search Input */}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Tìm kiếm hán tự..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleManualSearch();
+                }
+              }}
+            />
+            <Button
+              onClick={handleManualSearch}
+              disabled={isSearching || !searchQuery.trim()}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSearching ? 'Đang tìm...' : 'Tìm kiếm'}
+            </Button>
+          </div>
         </header>
 
         <section className="mt-4 grid md:grid-cols-[260px_1fr] gap-6">
@@ -549,6 +753,146 @@ export default function App() {
           <p className="mt-8 text-center text-gray-400">From Munich with love ❤️</p>
         </footer>
       </div>
+
+      {/* Search Results Modal */}
+      {isSearchModalOpen && searchResults.length > 0 && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Kết quả tìm kiếm cho "{searchQuery}"
+                </h2>
+                <p className="text-gray-600 mt-1">
+                  Tìm thấy {searchResults.length} bộ thủ
+                </p>
+              </div>
+              <Button
+                onClick={() => setIsSearchModalOpen(false)}
+                variant="outline"
+                className="rounded-full"
+              >
+                ✕
+              </Button>
+            </div>
+
+            {/* Character Definition */}
+            {charDefinition && charDefinition.length > 0 && (
+              <div className="px-6 py-4 bg-blue-50 border-b">
+                <div className="text-sm">
+                  <div className="font-semibold text-blue-800 mb-2">
+                    Định nghĩa của "{searchQuery}":
+                  </div>
+                  <div className="space-y-1">
+                    {charDefinition.map((entry, index) => (
+                      <div key={index} className="text-blue-700">
+                        <span className="font-medium">{entry.pinyin}</span>
+                        <span className="mx-2">•</span>
+                        <span>{entry.definition}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Modal Content */}
+            <div className="p-6">
+              {searchResults.length === 1 ? (
+                // Single result - show full details
+                <div className="text-center">
+                  <div className="text-6xl font-bold text-emerald-700 mb-4">
+                    {searchResults[0].boThu}
+                  </div>
+                  <div className="text-2xl font-semibold text-gray-800 mb-2">
+                    {searchResults[0].tenBoThu}
+                  </div>
+                  <div className="text-xl text-gray-600 mb-4">
+                    {searchResults[0].phienAm}
+                  </div>
+                  <div className="text-lg text-gray-700 mb-6">
+                    {searchResults[0].yNghia}
+                  </div>
+                  {searchResults[0].hinhAnh && searchResults[0].hinhAnh.length > 0 && (
+                    <SearchImageCarousel
+                      images={searchResults[0].hinhAnh}
+                      currentIndex={searchModalImageIndex}
+                      onImageChange={setSearchModalImageIndex}
+                      alt={searchResults[0].tenBoThu}
+                    />
+                  )}
+                </div>
+              ) : (
+                // Multiple results - show slider
+                <div className="space-y-6">
+                  {/* Navigation */}
+                  <div className="flex items-center justify-between">
+                    <Button
+                      onClick={() => setSearchModalIndex((i) => (i - 1 + searchResults.length) % searchResults.length)}
+                      variant="outline"
+                      className="rounded-full"
+                    >
+                      <ChevronLeft size={20} />
+                    </Button>
+                    
+                    <div className="text-center">
+                      <div className="text-sm text-gray-500">
+                        {searchModalIndex + 1} / {searchResults.length}
+                      </div>
+                    </div>
+                    
+                    <Button
+                      onClick={() => setSearchModalIndex((i) => (i + 1) % searchResults.length)}
+                      variant="outline"
+                      className="rounded-full"
+                    >
+                      <ChevronRight size={20} />
+                    </Button>
+                  </div>
+
+                  {/* Current Radical Display */}
+                  <div className="text-center">
+                    <div className="text-6xl font-bold text-emerald-700 mb-4">
+                      {searchResults[searchModalIndex].boThu}
+                    </div>
+                    <div className="text-2xl font-semibold text-gray-800 mb-2">
+                      {searchResults[searchModalIndex].tenBoThu}
+                    </div>
+                    <div className="text-xl text-gray-600 mb-4">
+                      {searchResults[searchModalIndex].phienAm}
+                    </div>
+                    <div className="text-lg text-gray-700 mb-6">
+                      {searchResults[searchModalIndex].yNghia}
+                    </div>
+                    {searchResults[searchModalIndex].hinhAnh && searchResults[searchModalIndex].hinhAnh.length > 0 && (
+                      <SearchImageCarousel
+                        images={searchResults[searchModalIndex].hinhAnh}
+                        currentIndex={searchModalImageIndex}
+                        onImageChange={setSearchModalImageIndex}
+                        alt={searchResults[searchModalIndex].tenBoThu}
+                      />
+                    )}
+                  </div>
+
+                  {/* Dots indicator */}
+                  <div className="flex justify-center gap-2">
+                    {searchResults.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setSearchModalIndex(index)}
+                        className={`w-3 h-3 rounded-full transition-colors ${
+                          index === searchModalIndex ? 'bg-blue-500' : 'bg-gray-300'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Flashcard Modal */}
       <FlashcardModal

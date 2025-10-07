@@ -7,6 +7,7 @@ import { VARIANT_TO_RADICAL } from "../radical-variants";
 import { useSpeechSynthesis } from "./hooks/useSpeechSynthesis";
 import { useSwipe } from "./hooks/useSwipe";
 import FlashcardModal from "./components/FlashcardModal";
+import { callApi } from "./lib/utils";
 
 // Utility function to extract all variants from boThu field
 const extractRadicalVariants = (boThu) => {
@@ -579,10 +580,10 @@ export default function App() {
       let response;
       if (isMultipleChars) {
         // Use decompose-many for multiple characters
-        response = await fetch(`/api/decompose-many?text=${encodeURIComponent(query)}&level=2`);
+        response = await callApi(`/api/decompose-many?text=${encodeURIComponent(query)}&level=2`);
       } else {
         // Use decompose for single character
-        response = await fetch(`/api/decompose?ch=${encodeURIComponent(query)}&level=2`);
+        response = await callApi(`/api/decompose?ch=${encodeURIComponent(query)}&level=2`);
       }
       
       const data = await response.json();
@@ -640,10 +641,10 @@ export default function App() {
       let response;
       if (isMultipleChars) {
         // Use define-many for multiple characters
-        response = await fetch(`/api/define-many?text=${encodeURIComponent(text)}&variant=s`);
+        response = await callApi(`/api/define-many?text=${encodeURIComponent(text)}&variant=s`);
       } else {
         // Use define for single character
-        response = await fetch(`/api/define?char=${encodeURIComponent(text)}&variant=s`);
+        response = await callApi(`/api/define?char=${encodeURIComponent(text)}&variant=s`);
       }
       
       if (!response.ok) {
@@ -677,7 +678,7 @@ export default function App() {
         // For multiple characters, we'll only get examples for the first character
         // to keep it simple and avoid too much data
         const firstChar = characters[0];
-        const response = await fetch(`/api/examples?char=${encodeURIComponent(firstChar)}`);
+        const response = await callApi(`/api/examples?char=${encodeURIComponent(firstChar)}`);
         if (!response.ok) {
           throw new Error('Failed to fetch character examples');
         }
@@ -685,7 +686,7 @@ export default function App() {
         return data.examples || [];
       } else {
         // Single character
-        const response = await fetch(`/api/examples?char=${encodeURIComponent(text)}`);
+        const response = await callApi(`/api/examples?char=${encodeURIComponent(text)}`);
         if (!response.ok) {
           throw new Error('Failed to fetch character examples');
         }
@@ -767,7 +768,7 @@ export default function App() {
     setLoadingCharacters(prev => new Set([...prev, cacheKey]));
     
     try {
-      const response = await fetch(`/api/characters-from-component?component=${encodeURIComponent(radicalChar)}`);
+      const response = await callApi(`/api/characters-from-component?component=${encodeURIComponent(radicalChar)}`);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }

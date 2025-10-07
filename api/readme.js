@@ -8,7 +8,7 @@
  */
 
 const BASE_URL = typeof window === "undefined"
-  ? process.env.HANZI_API_BASE || "https://your-app.vercel.app"
+  ? process.env.HANZI_API_BASE || "https://214-hsk.vercel.app"
   : ""; // same origin when deployed on Vercel
 
 /**
@@ -50,12 +50,21 @@ export async function exampleComponentExists() {
 }
 
 /**
- * 4️⃣ Lookup dictionary definition
+ * 4️⃣ Lookup dictionary definition (single character)
  * --------------------------------
  * Example: /api/define?char=雪&variant=s
  */
 export async function exampleDefine() {
   return callApi(`/api/define?char=${encodeURIComponent("雪")}&variant=s`);
+}
+
+/**
+ * 4️⃣ Lookup dictionary definition (multiple characters)
+ * --------------------------------
+ * Example: /api/define-many?text=爱橄黃&variant=s
+ */
+export async function exampleDefineMany() {
+  return callApi(`/api/define-many?text=${encodeURIComponent("爱橄黃")}&variant=s`);
 }
 
 /**
@@ -68,7 +77,25 @@ export async function exampleSearch() {
 }
 
 /**
- * 6️⃣ Pinyin ↔ Hanzi conversion
+ * 6️⃣ Get character examples/vocabulary
+ * --------------------------------
+ * Example: /api/examples?char=橄
+ */
+export async function exampleExamples() {
+  return callApi(`/api/examples?char=${encodeURIComponent("橄")}`);
+}
+
+/**
+ * 7️⃣ Get characters containing a component
+ * --------------------------------
+ * Example: /api/characters-from-component?component=囗
+ */
+export async function exampleCharactersFromComponent() {
+  return callApi(`/api/characters-from-component?component=${encodeURIComponent("囗")}`);
+}
+
+/**
+ * 8️⃣ Pinyin ↔ Hanzi conversion
  * --------------------------------
  * Example 1: /api/pinyin?mode=toPinyin&text=我爱你
  * Example 2: /api/pinyin?mode=toHanzi&pinyin=ai4
@@ -79,7 +106,7 @@ export async function examplePinyin() {
 }
 
 /**
- * 7️⃣ Run all examples sequentially
+ * 9️⃣ Run all examples sequentially
  */
 export async function runAllExamples() {
   console.log("=== 🈶 Hanzi API Usage Examples ===");
@@ -87,7 +114,10 @@ export async function runAllExamples() {
   await exampleDecomposeMany();
   await exampleComponentExists();
   await exampleDefine();
+  await exampleDefineMany();
   await exampleSearch();
+  await exampleExamples();
+  await exampleCharactersFromComponent();
   await examplePinyin();
   console.log("\n✅ All API calls completed.\n");
 }

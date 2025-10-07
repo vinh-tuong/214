@@ -292,6 +292,16 @@ export default function App() {
   const [searchModalIndex, setSearchModalIndex] = useState(0);
   const [searchModalImageIndex, setSearchModalImageIndex] = useState(0);
   const [charDefinition, setCharDefinition] = useState(null);
+  const [charExamples, setCharExamples] = useState(null);
+  const [examplesIndex, setExamplesIndex] = useState(0);
+  
+  // Characters data state
+  const [charactersData, setCharactersData] = useState(new Map()); // Cache for characters
+  const [loadingCharacters, setLoadingCharacters] = useState(new Set()); // Track loading states
+  const [showCharacters, setShowCharacters] = useState(new Set()); // Track which radicals show characters
+  const [errorCharacters, setErrorCharacters] = useState(new Set()); // Track which radicals have errors
+  const [charactersIndex, setCharactersIndex] = useState(new Map()); // Track carousel index for each radical
+  
   const [difficultSet, setDifficultSet] = useState(() => {
     // Load from localStorage on initialization
     const saved = localStorage.getItem('difficultRadicals');
@@ -308,6 +318,130 @@ export default function App() {
   const difficultGroup = useMemo(() => {
     return allData.filter(item => difficultSet.has(item.stt));
   }, [allData, difficultSet]);
+
+  // ExamplesCarousel component
+  const ExamplesCarousel = ({ examples, currentIndex, onIndexChange }) => {
+    // Flatten all examples from all groups
+    const allExamples = examples.flat();
+    
+    if (allExamples.length === 0) return null;
+    
+    const currentExample = allExamples[currentIndex];
+    
+    return (
+      <div className="flex items-center gap-3">
+        {/* Left arrow */}
+        <Button
+          onClick={() => onIndexChange((currentIndex - 1 + allExamples.length) % allExamples.length)}
+          variant="outline"
+          size="sm"
+          className="rounded-full flex-shrink-0"
+          disabled={allExamples.length <= 1}
+        >
+          <ChevronLeft size={16} />
+        </Button>
+        
+        {/* Example content */}
+        <div className="flex-1 text-center min-w-0">
+          <div className="text-green-800 font-medium mb-1">
+            {currentExample.traditional} {currentExample.simplified !== currentExample.traditional && `(${currentExample.simplified})`}
+          </div>
+          <div className="text-green-700 text-xs mb-1">
+            {currentExample.pinyin}
+          </div>
+          <div className="text-green-600 text-xs">
+            {currentExample.definition}
+          </div>
+        </div>
+        
+        {/* Right arrow */}
+        <Button
+          onClick={() => onIndexChange((currentIndex + 1) % allExamples.length)}
+          variant="outline"
+          size="sm"
+          className="rounded-full flex-shrink-0"
+          disabled={allExamples.length <= 1}
+        >
+          <ChevronRight size={16} />
+        </Button>
+        
+        {/* Counter */}
+        {allExamples.length > 1 && (
+          <div className="text-xs text-green-600 flex-shrink-0">
+            {currentIndex + 1}/{allExamples.length}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // CharactersCarousel component
+  const CharactersCarousel = ({ characters, radicalStt, onCharacterClick }) => {
+    const currentIndex = charactersIndex.get(radicalStt) || 0;
+    const charactersPerPage = 8; // Number of characters to show at once
+    const totalPages = Math.ceil(characters.length / charactersPerPage);
+    
+    const startIndex = currentIndex * charactersPerPage;
+    const endIndex = Math.min(startIndex + charactersPerPage, characters.length);
+    const visibleCharacters = characters.slice(startIndex, endIndex);
+    
+    const handlePrev = () => {
+      const newIndex = (currentIndex - 1 + totalPages) % totalPages;
+      setCharactersIndex(prev => new Map([...prev, [radicalStt, newIndex]]));
+    };
+    
+    const handleNext = () => {
+      const newIndex = (currentIndex + 1) % totalPages;
+      setCharactersIndex(prev => new Map([...prev, [radicalStt, newIndex]]));
+    };
+    
+    return (
+      <div className="flex items-center gap-2">
+        {/* Left arrow */}
+        <Button
+          onClick={handlePrev}
+          variant="outline"
+          size="sm"
+          className="rounded-full flex-shrink-0"
+          disabled={totalPages <= 1}
+        >
+          <ChevronLeft size={16} />
+        </Button>
+        
+        {/* Characters display */}
+        <div className="flex-1 flex flex-wrap gap-1 justify-center min-w-0">
+          {visibleCharacters.map((char, index) => (
+            <span
+              key={startIndex + index}
+              className="inline-block px-2 py-1 bg-white border border-gray-200 rounded text-sm hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition-colors flex-shrink-0"
+              title={`Click to search for "${char}"`}
+              onClick={() => onCharacterClick(char)}
+            >
+              {char}
+            </span>
+          ))}
+        </div>
+        
+        {/* Right arrow */}
+        <Button
+          onClick={handleNext}
+          variant="outline"
+          size="sm"
+          className="rounded-full flex-shrink-0"
+          disabled={totalPages <= 1}
+        >
+          <ChevronRight size={16} />
+        </Button>
+        
+        {/* Counter */}
+        {totalPages > 1 && (
+          <div className="text-xs text-gray-500 flex-shrink-0">
+            {currentIndex + 1}/{totalPages}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // Create popular group with 50 most common radicals
   const popularGroup = useMemo(() => {
@@ -439,27 +573,53 @@ export default function App() {
 
     setIsSearching(true);
     try {
-      const response = await fetch(`/api/decompose?ch=${encodeURIComponent(query)}&level=2`);
+      const characters = [...query.trim()];
+      const isMultipleChars = characters.length > 1;
+      
+      let response;
+      if (isMultipleChars) {
+        // Use decompose-many for multiple characters
+        response = await fetch(`/api/decompose-many?text=${encodeURIComponent(query)}&level=2`);
+      } else {
+        // Use decompose for single character
+        response = await fetch(`/api/decompose?ch=${encodeURIComponent(query)}&level=2`);
+      }
+      
       const data = await response.json();
       
-      if (response.ok && data.components && data.components.length > 0) {
-        // Debug: log components
-        console.log('API components:', data.components);
+      if (response.ok) {
+        let allComponents = [];
         
-        // Find radicals that match the decomposed components
-        const matchingRadicals = data.components
-          .map(component => {
-            const radical = radicalMapping.get(component);
-            console.log(`Component "${component}" -> radical:`, radical);
-            return radical;
-          })
-          .filter(Boolean) // Remove undefined values
-          .filter((radical, index, array) => 
-            array.findIndex(r => r.stt === radical.stt) === index
-          ); // Remove duplicates
+        if (isMultipleChars && data.result) {
+          // Extract components from all characters
+          Object.values(data.result).forEach(components => {
+            allComponents.push(...components);
+          });
+        } else if (!isMultipleChars && data.components) {
+          allComponents = data.components;
+        }
         
-        console.log('Final matching radicals:', matchingRadicals);
-        setSearchResults(matchingRadicals);
+        if (allComponents.length > 0) {
+          // Debug: log components
+          console.log('API components:', allComponents);
+          
+          // Find radicals that match the decomposed components
+          const matchingRadicals = allComponents
+            .map(component => {
+              const radical = radicalMapping.get(component);
+              console.log(`Component "${component}" -> radical:`, radical);
+              return radical;
+            })
+            .filter(Boolean) // Remove undefined values
+            .filter((radical, index, array) => 
+              array.findIndex(r => r.stt === radical.stt) === index
+            ); // Remove duplicates
+          
+          console.log('Final matching radicals:', matchingRadicals);
+          setSearchResults(matchingRadicals);
+        } else {
+          setSearchResults([]);
+        }
       } else {
         setSearchResults([]);
       }
@@ -469,19 +629,71 @@ export default function App() {
     } finally {
       setIsSearching(false);
     }
-  }, []);
+  }, [radicalMapping]);
 
   // Fetch character definition
-  const fetchCharDefinition = useCallback(async (char) => {
+  const fetchCharDefinition = useCallback(async (text) => {
     try {
-      const response = await fetch(`/api/define?char=${encodeURIComponent(char)}&variant=s`);
+      const characters = [...text.trim()];
+      const isMultipleChars = characters.length > 1;
+      
+      let response;
+      if (isMultipleChars) {
+        // Use define-many for multiple characters
+        response = await fetch(`/api/define-many?text=${encodeURIComponent(text)}&variant=s`);
+      } else {
+        // Use define for single character
+        response = await fetch(`/api/define?char=${encodeURIComponent(text)}&variant=s`);
+      }
+      
       if (!response.ok) {
         throw new Error('Failed to fetch character definition');
       }
+      
       const data = await response.json();
-      return data.entries || [];
+      
+      if (isMultipleChars && data.result) {
+        // Return object with character as key and definitions as value
+        return data.result;
+      } else if (!isMultipleChars && data.entries) {
+        // Return array of definitions for single character
+        return data.entries;
+      }
+      
+      return [];
     } catch (error) {
       console.error('Error fetching character definition:', error);
+      return [];
+    }
+  }, []);
+
+  // Fetch character examples
+  const fetchCharExamples = useCallback(async (text) => {
+    try {
+      const characters = [...text.trim()];
+      const isMultipleChars = characters.length > 1;
+      
+      if (isMultipleChars) {
+        // For multiple characters, we'll only get examples for the first character
+        // to keep it simple and avoid too much data
+        const firstChar = characters[0];
+        const response = await fetch(`/api/examples?char=${encodeURIComponent(firstChar)}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch character examples');
+        }
+        const data = await response.json();
+        return data.examples || [];
+      } else {
+        // Single character
+        const response = await fetch(`/api/examples?char=${encodeURIComponent(text)}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch character examples');
+        }
+        const data = await response.json();
+        return data.examples || [];
+      }
+    } catch (error) {
+      console.error('Error fetching character examples:', error);
       return [];
     }
   }, []);
@@ -490,26 +702,34 @@ export default function App() {
   const handleManualSearch = useCallback(async () => {
     if (!searchQuery.trim()) return;
     
-    setIsSearching(true);
+    // Show modal immediately
+    setIsSearchModalOpen(true);
+    setSearchModalIndex(0);
+    setSearchModalImageIndex(0);
+    setSearchResults([]); // Clear previous results
     setCharDefinition(null);
+    setCharExamples(null);
+    setExamplesIndex(0);
+    setIsSearching(true);
     
     try {
       // Search for radicals
       await handleSearch(searchQuery);
       
-      // Fetch character definition
-      const definition = await fetchCharDefinition(searchQuery);
-      setCharDefinition(definition);
+      // Fetch character definition and examples in parallel
+      const [definition, examples] = await Promise.all([
+        fetchCharDefinition(searchQuery),
+        fetchCharExamples(searchQuery)
+      ]);
       
-      setIsSearchModalOpen(true);
-      setSearchModalIndex(0);
-      setSearchModalImageIndex(0);
+      setCharDefinition(definition);
+      setCharExamples(examples);
     } catch (error) {
       console.error('Search error:', error);
     } finally {
       setIsSearching(false);
     }
-  }, [searchQuery, handleSearch, fetchCharDefinition]);
+  }, [searchQuery, handleSearch, fetchCharDefinition, fetchCharExamples]);
 
   // Helper function to format ghepTu information
   const formatGhepTu = (ghepTu) => {
@@ -522,6 +742,121 @@ export default function App() {
     
     return `Ghép từ: ${components.join(' và ')}`;
   };
+
+  // Fetch characters for a radical
+  const fetchCharactersForRadical = useCallback(async (radical) => {
+    const radicalChar = radical.boThu.split(' (')[0]; // Get main radical character
+    const cacheKey = radical.stt;
+    
+    // Check if already cached
+    if (charactersData.has(cacheKey)) {
+      return charactersData.get(cacheKey);
+    }
+    
+    // Check if already loading
+    if (loadingCharacters.has(cacheKey)) {
+      return null;
+    }
+    
+    // Check if has error (don't retry automatically)
+    if (errorCharacters.has(cacheKey)) {
+      return [];
+    }
+    
+    // Mark as loading
+    setLoadingCharacters(prev => new Set([...prev, cacheKey]));
+    
+    try {
+      const response = await fetch(`/api/characters-from-component?component=${encodeURIComponent(radicalChar)}`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      const characters = data.characters || [];
+      
+      // Cache the result
+      setCharactersData(prev => new Map([...prev, [cacheKey, characters]]));
+      
+      // Remove from error state if it was there
+      setErrorCharacters(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(cacheKey);
+        return newSet;
+      });
+      
+      return characters;
+    } catch (error) {
+      console.error('Error fetching characters for radical:', radical.boThu, error);
+      
+      // Mark as error to prevent infinite retries
+      setErrorCharacters(prev => new Set([...prev, cacheKey]));
+      
+      return [];
+    } finally {
+      // Remove from loading
+      setLoadingCharacters(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(cacheKey);
+        return newSet;
+      });
+    }
+  }, [charactersData, loadingCharacters, errorCharacters]);
+
+  // Toggle show characters for a radical
+  const toggleShowCharacters = useCallback(async (radical) => {
+    const cacheKey = radical.stt;
+    
+    if (showCharacters.has(cacheKey)) {
+      // Hide characters
+      setShowCharacters(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(cacheKey);
+        return newSet;
+      });
+    } else {
+      // Show characters - fetch if not cached and not in error state
+      setShowCharacters(prev => new Set([...prev, cacheKey]));
+      
+      if (!charactersData.has(cacheKey) && !errorCharacters.has(cacheKey)) {
+        await fetchCharactersForRadical(radical);
+      }
+    }
+  }, [showCharacters, charactersData, errorCharacters, fetchCharactersForRadical]);
+
+  // Handle character click from carousel
+  const handleCharacterClick = useCallback(async (char) => {
+    setSearchQuery(char);
+    
+    // Show modal immediately
+    setIsSearchModalOpen(true);
+    setSearchModalIndex(0);
+    setSearchModalImageIndex(0);
+    setSearchResults([]); // Clear previous results
+    setCharDefinition(null);
+    setCharExamples(null);
+    setExamplesIndex(0);
+    setIsSearching(true);
+    
+    try {
+      await handleSearch(char);
+      const [definition, examples] = await Promise.all([
+        fetchCharDefinition(char),
+        fetchCharExamples(char)
+      ]);
+      setCharDefinition(definition);
+      setCharExamples(examples);
+    } catch (error) {
+      console.error('Search error:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  }, [handleSearch, fetchCharDefinition, fetchCharExamples]);
+
+  // Reset examples index when examples change
+  useEffect(() => {
+    setExamplesIndex(0);
+  }, [charExamples]);
 
   const slideRef = useRef(null);
 
@@ -537,6 +872,7 @@ export default function App() {
       { transform: 'translateX(0px)', opacity: 1 }
     ], { duration: 300, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' });
   }, [idx, stroke, slideDirection]);
+
 
   const strokesAvailable = useMemo(() => Object.keys(groups).map(Number).sort((a,b)=>a-b), [groups]);
 
@@ -687,6 +1023,72 @@ export default function App() {
                            </div>
                          )}
                        </div>
+
+                       {/* Characters section */}
+                       <div className="mt-6">
+                         <Button
+                           variant="outline"
+                           className="rounded-full text-sm bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                           onClick={() => toggleShowCharacters(cur)}
+                           disabled={loadingCharacters.has(cur.stt)}
+                         >
+                           <span className="flex items-center gap-1 sm:gap-2">
+                             {loadingCharacters.has(cur.stt) ? (
+                               <>
+                                 <div className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+                                 <span className="hidden sm:inline">Loading...</span>
+                               </>
+                             ) : showCharacters.has(cur.stt) ? (
+                               <>
+                                 <span>📖</span>
+                                 <span className="hidden sm:inline">Hide Characters</span>
+                               </>
+                             ) : (
+                               <>
+                                 <span>📚</span>
+                                 <span className="hidden sm:inline">Show Characters</span>
+                               </>
+                             )}
+                           </span>
+                         </Button>
+
+                         {showCharacters.has(cur.stt) && (
+                           <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
+                             <div className="text-sm font-semibold text-gray-700 mb-3">
+                               Hán tự chứa bộ thủ "{cur.boThu}":
+                             </div>
+                             {charactersData.has(cur.stt) ? (
+                               <CharactersCarousel
+                                 characters={charactersData.get(cur.stt)}
+                                 radicalStt={cur.stt}
+                                 onCharacterClick={handleCharacterClick}
+                               />
+                             ) : errorCharacters.has(cur.stt) ? (
+                               <div className="text-sm text-red-500 flex items-center gap-2">
+                                 <span>❌ Không thể tải danh sách hán tự</span>
+                                 <button
+                                   onClick={() => {
+                                     // Clear error state and retry
+                                     setErrorCharacters(prev => {
+                                       const newSet = new Set(prev);
+                                       newSet.delete(cur.stt);
+                                       return newSet;
+                                     });
+                                     fetchCharactersForRadical(cur);
+                                   }}
+                                   className="text-blue-600 hover:text-blue-800 underline text-xs"
+                                 >
+                                   Thử lại
+                                 </button>
+                               </div>
+                             ) : (
+                               <div className="text-sm text-gray-500">
+                                 Loading characters...
+                               </div>
+                             )}
+                           </div>
+                         )}
+                       </div>
                      </div>
 
                     <div className="mt-8 flex flex-wrap gap-2 sm:gap-3 justify-center">
@@ -771,63 +1173,134 @@ export default function App() {
       </div>
 
       {/* Search Results Modal */}
-      {isSearchModalOpen && searchResults.length > 0 && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      {isSearchModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-800">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b flex-shrink-0">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-800 truncate">
                   Kết quả tìm kiếm cho "{searchQuery}"
                 </h2>
-                <p className="text-gray-600 mt-1">
-                  Tìm thấy {searchResults.length} bộ thủ
-                </p>
+                {isSearching ? (
+                  <p className="text-gray-600 mt-1 flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    Đang tìm kiếm...
+                  </p>
+                ) : searchResults.length > 0 ? (
+                  <p className="text-gray-600 mt-1">
+                    Tìm thấy {searchResults.length} bộ thủ
+                  </p>
+                ) : (
+                  <p className="text-gray-600 mt-1">
+                    Không có kết quả tìm kiếm cho "{searchQuery}"
+                  </p>
+                )}
               </div>
               <Button
                 onClick={() => setIsSearchModalOpen(false)}
                 variant="outline"
-                className="rounded-full"
+                className="rounded-full ml-2 flex-shrink-0"
               >
                 ✕
               </Button>
             </div>
 
             {/* Character Definition */}
-            {charDefinition && charDefinition.length > 0 && (
-              <div className="px-6 py-4 bg-blue-50 border-b">
+            {charDefinition && (
+              <div className="px-4 sm:px-6 py-3 sm:py-4 bg-blue-50 border-b flex-shrink-0">
                 <div className="text-sm">
                   <div className="font-semibold text-blue-800 mb-2">
                     Định nghĩa của "{searchQuery}":
                   </div>
-                  <div className="space-y-1">
-                    {charDefinition.map((entry, index) => (
-                      <div key={index} className="text-blue-700">
-                        <span className="font-medium">{entry.pinyin}</span>
-                        <span className="mx-2">•</span>
-                        <span>{entry.definition}</span>
-                      </div>
-                    ))}
+                  {Array.isArray(charDefinition) ? (
+                    // Single character - array of definitions
+                    <div className="space-y-1">
+                      {charDefinition.map((entry, index) => (
+                        <div key={index} className="text-blue-700">
+                          <span className="font-medium">{entry.pinyin}</span>
+                          <span className="mx-2">•</span>
+                          <span>{entry.definition}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    // Multiple characters - object with character as key
+                    <div className="space-y-3">
+                      {Object.entries(charDefinition).map(([char, definitions]) => (
+                        <div key={char} className="border-l-2 border-blue-300 pl-3">
+                          <div className="font-semibold text-blue-900 mb-1">
+                            {char}:
+                          </div>
+                          <div className="space-y-1">
+                            {definitions.map((entry, index) => (
+                              <div key={index} className="text-blue-700">
+                                <span className="font-medium">{entry.pinyin}</span>
+                                <span className="mx-2">•</span>
+                                <span>{entry.definition}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Character Examples */}
+            {charExamples && charExamples.length > 0 && (
+              <div className="px-4 sm:px-6 py-3 sm:py-4 bg-green-50 border-b flex-shrink-0">
+                <div className="text-sm">
+                  <div className="font-semibold text-green-800 mb-3">
+                    Ví dụ từ vựng chứa "{searchQuery}":
                   </div>
+                  <ExamplesCarousel 
+                    examples={charExamples}
+                    currentIndex={examplesIndex}
+                    onIndexChange={setExamplesIndex}
+                  />
                 </div>
               </div>
             )}
 
             {/* Modal Content */}
-            <div className="p-6">
-              {searchResults.length === 1 ? (
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+              {isSearching ? (
+                // Loading state
+                <div className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-gray-600">Đang tìm kiếm bộ thủ...</p>
+                  </div>
+                </div>
+              ) : searchResults.length === 0 ? (
+                // No results state
+                <div className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <div className="text-6xl mb-4">🔍</div>
+                    <p className="text-gray-600 text-lg mb-2">
+                      Không tìm thấy bộ thủ nào cho "{searchQuery}"
+                    </p>
+                    <p className="text-gray-500 text-sm">
+                      Thử tìm kiếm với ký tự khác hoặc kiểm tra chính tả
+                    </p>
+                  </div>
+                </div>
+              ) : searchResults.length === 1 ? (
                 // Single result - show full details
                 <div className="text-center">
-                  <div className="text-6xl font-bold text-emerald-700 mb-4">
+                  <div className="text-4xl sm:text-6xl font-bold text-emerald-700 mb-4">
                     {searchResults[0].boThu}
                   </div>
-                  <div className="text-2xl font-semibold text-gray-800 mb-2">
+                  <div className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">
                     {searchResults[0].tenBoThu}
                   </div>
-                  <div className="text-xl text-gray-600 mb-4">
+                  <div className="text-lg sm:text-xl text-gray-600 mb-4">
                     {searchResults[0].phienAm}
                   </div>
-                  <div className="text-lg text-gray-700 mb-6">
+                  <div className="text-base sm:text-lg text-gray-700 mb-6">
                     {searchResults[0].yNghia}
                   </div>
                   {searchResults[0].hinhAnh && searchResults[0].hinhAnh.length > 0 && (
@@ -869,16 +1342,16 @@ export default function App() {
 
                   {/* Current Radical Display */}
                   <div className="text-center">
-                    <div className="text-6xl font-bold text-emerald-700 mb-4">
+                    <div className="text-4xl sm:text-6xl font-bold text-emerald-700 mb-4">
                       {searchResults[searchModalIndex].boThu}
                     </div>
-                    <div className="text-2xl font-semibold text-gray-800 mb-2">
+                    <div className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">
                       {searchResults[searchModalIndex].tenBoThu}
                     </div>
-                    <div className="text-xl text-gray-600 mb-4">
+                    <div className="text-lg sm:text-xl text-gray-600 mb-4">
                       {searchResults[searchModalIndex].phienAm}
                     </div>
-                    <div className="text-lg text-gray-700 mb-6">
+                    <div className="text-base sm:text-lg text-gray-700 mb-6">
                       {searchResults[searchModalIndex].yNghia}
                     </div>
                     {searchResults[searchModalIndex].hinhAnh && searchResults[searchModalIndex].hinhAnh.length > 0 && (

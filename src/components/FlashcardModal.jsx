@@ -178,18 +178,6 @@ const FlashcardModal = ({
     return allData.find(item => item.stt === stt);
   };
 
-  // Helper function to format ghepTu information
-  const formatGhepTu = (ghepTu) => {
-    if (!ghepTu || ghepTu.length === 0) return null;
-    
-    const components = ghepTu.map(stt => {
-      const radical = getRadicalByStt(stt);
-      return radical ? `${radical.boThu} (${radical.tenBoThu})` : `STT ${stt}`;
-    });
-    
-    return `Ghép từ: ${components.join(' và ')}`;
-  };
-
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e) => {
@@ -294,12 +282,6 @@ const FlashcardModal = ({
                     {currentRadical.yNghia}
                   </div>
                   
-                  {/* GhepTu information */}
-                  {formatGhepTu(currentRadical.ghepTu) && (
-                    <div className="text-sm sm:text-lg text-blue-600 bg-blue-50 px-3 py-2 sm:px-4 sm:py-3 rounded-xl inline-block">
-                      {formatGhepTu(currentRadical.ghepTu)}
-                    </div>
-                  )}
                 </div>
 
               {/* Controls */}

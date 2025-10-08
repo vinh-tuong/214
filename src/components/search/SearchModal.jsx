@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ExamplesCarousel } from '../carousel/ExamplesCarousel';
 import { ImageCarousel } from '../carousel/ImageCarousel';
+import DictionaryCarousel from '../carousel/DictionaryCarousel';
 
 /**
  * Search results modal component
@@ -20,7 +21,10 @@ export const SearchModal = ({
   searchModalIndex,
   setSearchModalIndex,
   searchModalImageIndex,
-  setSearchModalImageIndex
+  setSearchModalImageIndex,
+  dictionaryResults,
+  dictionaryIndex,
+  setDictionaryIndex
 }) => {
   if (!isOpen) return null;
 
@@ -57,65 +61,6 @@ export const SearchModal = ({
           </Button>
         </div>
 
-        {/* Character Definition */}
-        {charDefinition && (
-          <div className="px-4 sm:px-6 py-3 sm:py-4 bg-blue-50 border-b flex-shrink-0">
-            <div className="text-sm">
-              <div className="font-semibold text-blue-800 mb-2">
-                Định nghĩa của "{searchQuery}":
-              </div>
-              {Array.isArray(charDefinition) ? (
-                // Single character - array of definitions
-                <div className="space-y-1">
-                  {charDefinition.map((entry, index) => (
-                    <div key={index} className="text-blue-700">
-                      <span className="font-medium">{entry.pinyin}</span>
-                      <span className="mx-2">•</span>
-                      <span>{entry.definition}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                // Multiple characters - object with character as key
-                <div className="space-y-3">
-                  {Object.entries(charDefinition).map(([char, definitions]) => (
-                    <div key={char} className="border-l-2 border-blue-300 pl-3">
-                      <div className="font-semibold text-blue-900 mb-1">
-                        {char}:
-                      </div>
-                      <div className="space-y-1">
-                        {definitions.map((entry, index) => (
-                          <div key={index} className="text-blue-700">
-                            <span className="font-medium">{entry.pinyin}</span>
-                            <span className="mx-2">•</span>
-                            <span>{entry.definition}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Character Examples */}
-        {charExamples && charExamples.length > 0 && (
-          <div className="px-4 sm:px-6 py-3 sm:py-4 bg-green-50 border-b flex-shrink-0">
-            <div className="text-sm">
-              <div className="font-semibold text-green-800 mb-3">
-                Ví dụ từ vựng chứa "{searchQuery}":
-              </div>
-              <ExamplesCarousel 
-                examples={charExamples}
-                currentIndex={examplesIndex}
-                onIndexChange={setExamplesIndex}
-              />
-            </div>
-          </div>
-        )}
-
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           {isSearching ? (
@@ -142,25 +87,22 @@ export const SearchModal = ({
           ) : searchResults.length === 1 ? (
             // Single result - show full details
             <div className="text-center">
-              <div className="text-4xl sm:text-6xl font-bold text-emerald-700 mb-4">
+              <div className="text-2xl sm:text-3xl font-bold text-emerald-700 mb-3">
                 {searchResults[0].boThu}
               </div>
-              <div className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">
-                {searchResults[0].tenBoThu}
-              </div>
-              <div className="text-lg sm:text-xl text-gray-600 mb-4">
-                {searchResults[0].phienAm}
-              </div>
-              <div className="text-base sm:text-lg text-gray-700 mb-6">
-                {searchResults[0].yNghia}
+              <div className="text-sm sm:text-base text-gray-700 mb-4">
+                <span className="font-bold">{searchResults[0].tenBoThu}</span> • {searchResults[0].phienAm} • <span className="italic">{searchResults[0].yNghia}</span>
               </div>
               {searchResults[0].hinhAnh && searchResults[0].hinhAnh.length > 0 && (
-                <ImageCarousel
-                  images={searchResults[0].hinhAnh}
-                  currentIndex={searchModalImageIndex}
-                  onImageChange={setSearchModalImageIndex}
-                  alt={searchResults[0].tenBoThu}
-                />
+                <div className="mb-4">
+                  <ImageCarousel
+                    images={searchResults[0].hinhAnh}
+                    currentIndex={searchModalImageIndex}
+                    onImageChange={setSearchModalImageIndex}
+                    alt={searchResults[0].tenBoThu}
+                    size="small"
+                  />
+                </div>
               )}
             </div>
           ) : (
@@ -193,25 +135,22 @@ export const SearchModal = ({
 
               {/* Current Radical Display */}
               <div className="text-center">
-                <div className="text-4xl sm:text-6xl font-bold text-emerald-700 mb-4">
+                <div className="text-2xl sm:text-3xl font-bold text-emerald-700 mb-3">
                   {searchResults[searchModalIndex].boThu}
                 </div>
-                <div className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">
-                  {searchResults[searchModalIndex].tenBoThu}
-                </div>
-                <div className="text-lg sm:text-xl text-gray-600 mb-4">
-                  {searchResults[searchModalIndex].phienAm}
-                </div>
-                <div className="text-base sm:text-lg text-gray-700 mb-6">
-                  {searchResults[searchModalIndex].yNghia}
+                <div className="text-sm sm:text-base text-gray-700 mb-4">
+                  <span className="font-bold">{searchResults[searchModalIndex].tenBoThu}</span> • {searchResults[searchModalIndex].phienAm} • <span className="italic">{searchResults[searchModalIndex].yNghia}</span>
                 </div>
                 {searchResults[searchModalIndex].hinhAnh && searchResults[searchModalIndex].hinhAnh.length > 0 && (
-                  <ImageCarousel
-                    images={searchResults[searchModalIndex].hinhAnh}
-                    currentIndex={searchModalImageIndex}
-                    onImageChange={setSearchModalImageIndex}
-                    alt={searchResults[searchModalIndex].tenBoThu}
-                  />
+                  <div className="mb-4">
+                    <ImageCarousel
+                      images={searchResults[searchModalIndex].hinhAnh}
+                      currentIndex={searchModalImageIndex}
+                      onImageChange={setSearchModalImageIndex}
+                      alt={searchResults[searchModalIndex].tenBoThu}
+                      size="small"
+                    />
+                  </div>
                 )}
               </div>
 
@@ -229,6 +168,87 @@ export const SearchModal = ({
               </div>
             </div>
           )}
+
+          {/* Character Definition */}
+          {charDefinition && (
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="text-sm">
+                <div className="font-semibold text-blue-800 mb-2">
+                  Định nghĩa của "{searchQuery}":
+                </div>
+                {Array.isArray(charDefinition) ? (
+                  // Single character - array of definitions
+                  <div className="space-y-1">
+                    {charDefinition.map((entry, index) => (
+                      <div key={index} className="text-blue-700">
+                        <span className="font-medium">{entry.pinyin}</span>
+                        <span className="mx-2">•</span>
+                        <span>{entry.definition}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  // Multiple characters - object with character as key
+                  <div className="space-y-3">
+                    {Object.entries(charDefinition).map(([char, definitions]) => (
+                      <div key={char} className="border-l-2 border-blue-300 pl-3">
+                        <div className="font-semibold text-blue-900 mb-1">
+                          {char}:
+                        </div>
+                        <div className="space-y-1">
+                          {definitions.map((entry, index) => (
+                            <div key={index} className="text-blue-700">
+                              <span className="font-medium">{entry.pinyin}</span>
+                              <span className="mx-2">•</span>
+                              <span>{entry.definition}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Character Examples */}
+          {charExamples && charExamples.length > 0 && (
+            <div className="mt-4 p-4 bg-green-50 rounded-lg">
+              <div className="text-sm">
+                <div className="font-semibold text-green-800 mb-3">
+                  Từ vựng chứa "{searchQuery}":
+                </div>
+                <ExamplesCarousel 
+                  examples={charExamples}
+                  currentIndex={examplesIndex}
+                  onIndexChange={setExamplesIndex}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Dictionary Search Results */}
+          {dictionaryResults && dictionaryResults.length > 0 ? (
+            <div className="mt-4 p-4 bg-purple-50 rounded-lg">
+              <div className="text-sm">
+                <div className="font-semibold text-purple-800 mb-3">
+                  Từ điển chứa "{searchQuery}":
+                </div>
+                <DictionaryCarousel 
+                  dictionaryResults={dictionaryResults}
+                  currentIndex={dictionaryIndex}
+                  onIndexChange={setDictionaryIndex}
+                />
+              </div>
+            </div>
+          ) : dictionaryResults !== null ? (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <div className="text-sm text-gray-600">
+                🔍 Không tìm thấy từ vựng nào chứa "{searchQuery}" trong từ điển
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

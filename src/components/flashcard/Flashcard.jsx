@@ -93,8 +93,9 @@ export const Flashcard = ({
             
             {/* Supporting information */}
             <div className="text-center">
-              <div className="italic text-xl mb-4 text-gray-700">{currentRadical.tenBoThu} • {currentRadical.phienAm}</div>
-              <div className="text-lg text-gray-600">{currentRadical.yNghia}</div>
+              <div className="text-xl mb-4 text-gray-700">
+                <span className="font-bold">{currentRadical.tenBoThu}</span> • {currentRadical.phienAm} • <span className="italic">{currentRadical.yNghia}</span>
+              </div>
             </div>
 
             {/* Characters section */}

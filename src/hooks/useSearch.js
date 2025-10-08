@@ -15,6 +15,8 @@ export const useSearch = () => {
   const [charDefinition, setCharDefinition] = useState(null);
   const [charExamples, setCharExamples] = useState(null);
   const [examplesIndex, setExamplesIndex] = useState(0);
+  const [dictionaryResults, setDictionaryResults] = useState(null);
+  const [dictionaryIndex, setDictionaryIndex] = useState(0);
 
   // Create radical mapping once
   const radicalMapping = useMemo(() => createRadicalMapping(), []);
@@ -148,6 +150,27 @@ export const useSearch = () => {
     }
   }, []);
 
+  // Fetch dictionary search results
+  const fetchDictionaryResults = useCallback(async (text) => {
+    try {
+      console.log('🔍 Fetching dictionary results for:', text);
+      const response = await callApi(`/api/dictionary-search?text=${encodeURIComponent(text)}&mode=all`);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('❌ Dictionary API Error:', errorData);
+        throw new Error('Failed to fetch dictionary results');
+      }
+      
+      const data = await response.json();
+      console.log('✅ Dictionary results:', data);
+      return data.results || [];
+    } catch (error) {
+      console.error('❌ Error fetching dictionary results:', error);
+      return [];
+    }
+  }, []);
+
   // Manual search function
   const handleManualSearch = useCallback(async () => {
     if (!searchQuery.trim()) return;
@@ -160,20 +183,26 @@ export const useSearch = () => {
     setCharDefinition(null);
     setCharExamples(null);
     setExamplesIndex(0);
+    setDictionaryResults(null);
+    setDictionaryIndex(0);
     setIsSearching(true);
     
     try {
       // Search for radicals
       await handleSearch(searchQuery);
       
-      // Fetch character definition and examples in parallel
-      const [definition, examples] = await Promise.all([
+      console.log('🚀 Starting parallel API calls for:', searchQuery);
+      // Fetch character definition, examples, and dictionary results in parallel
+      const [definition, examples, dictionary] = await Promise.all([
         fetchCharDefinition(searchQuery),
-        fetchCharExamples(searchQuery)
+        fetchCharExamples(searchQuery),
+        fetchDictionaryResults(searchQuery)
       ]);
       
+      console.log('📊 API Results:', { definition, examples, dictionary });
       setCharDefinition(definition);
       setCharExamples(examples);
+      setDictionaryResults(dictionary);
     } catch (error) {
       console.error('Search error:', error);
     } finally {
@@ -193,22 +222,28 @@ export const useSearch = () => {
     setCharDefinition(null);
     setCharExamples(null);
     setExamplesIndex(0);
+    setDictionaryResults(null);
+    setDictionaryIndex(0);
     setIsSearching(true);
     
     try {
       await handleSearch(char);
-      const [definition, examples] = await Promise.all([
+      console.log('🚀 Starting parallel API calls for character click:', char);
+      const [definition, examples, dictionary] = await Promise.all([
         fetchCharDefinition(char),
-        fetchCharExamples(char)
+        fetchCharExamples(char),
+        fetchDictionaryResults(char)
       ]);
+      console.log('📊 Character click API Results:', { definition, examples, dictionary });
       setCharDefinition(definition);
       setCharExamples(examples);
+      setDictionaryResults(dictionary);
     } catch (error) {
       console.error('Search error:', error);
     } finally {
       setIsSearching(false);
     }
-  }, [handleSearch, fetchCharDefinition, fetchCharExamples]);
+  }, [handleSearch, fetchCharDefinition, fetchCharExamples, fetchDictionaryResults]);
 
   return {
     // State
@@ -226,6 +261,9 @@ export const useSearch = () => {
     charExamples,
     examplesIndex,
     setExamplesIndex,
+    dictionaryResults,
+    dictionaryIndex,
+    setDictionaryIndex,
     
     // Actions
     handleManualSearch,

@@ -106,7 +106,18 @@ export async function examplePinyin() {
 }
 
 /**
- * 9️⃣ Run all examples sequentially
+ * 9️⃣ Dictionary search
+ * --------------------
+ * Example 1: /api/dictionary-search?text=雪&mode=all
+ * Example 2: /api/dictionary-search?text=心的小孩真&mode=only
+ */
+export async function exampleDictionarySearch() {
+  await callApi(`/api/dictionary-search?text=${encodeURIComponent("雪")}&mode=all`);
+  await callApi(`/api/dictionary-search?text=${encodeURIComponent("心的小孩真")}&mode=only`);
+}
+
+/**
+ * 🔟 Run all examples sequentially
  */
 export async function runAllExamples() {
   console.log("=== 🈶 Hanzi API Usage Examples ===");
@@ -119,6 +130,7 @@ export async function runAllExamples() {
   await exampleExamples();
   await exampleCharactersFromComponent();
   await examplePinyin();
+  await exampleDictionarySearch();
   console.log("\n✅ All API calls completed.\n");
 }
 

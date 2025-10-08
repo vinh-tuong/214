@@ -5,8 +5,10 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 /**
  * Carousel component for displaying images
  */
-export const ImageCarousel = ({ images, currentIndex, onImageChange, alt }) => {
+export const ImageCarousel = ({ images, currentIndex, onImageChange, alt, size = 'large' }) => {
   if (!images || images.length === 0) return null;
+  
+  const imageSize = size === 'small' ? 'w-24 h-24' : 'w-48 h-48';
   
   if (images.length === 1) {
     return (
@@ -14,7 +16,7 @@ export const ImageCarousel = ({ images, currentIndex, onImageChange, alt }) => {
         <img 
           src={`/images/${images[0]}`} 
           alt={alt} 
-          className="w-48 h-48 object-contain rounded-lg border" 
+          className={`${imageSize} object-contain rounded-lg border`}
         />
       </div>
     );
@@ -35,7 +37,7 @@ export const ImageCarousel = ({ images, currentIndex, onImageChange, alt }) => {
         <img 
           src={`/images/${images[currentIndex]}`} 
           alt={alt} 
-          className="w-48 h-48 object-contain rounded-lg border" 
+          className={`${imageSize} object-contain rounded-lg border`}
         />
         <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
           {currentIndex + 1}/{images.length}

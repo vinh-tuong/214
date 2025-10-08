@@ -41,6 +41,9 @@ function App() {
     charExamples,
     examplesIndex,
     setExamplesIndex,
+    dictionaryResults,
+    dictionaryIndex,
+    setDictionaryIndex,
     handleManualSearch,
     handleCharacterClick
   } = useSearch();
@@ -407,6 +410,9 @@ function App() {
         setSearchModalIndex={setSearchModalIndex}
         searchModalImageIndex={searchModalImageIndex}
         setSearchModalImageIndex={setSearchModalImageIndex}
+        dictionaryResults={dictionaryResults}
+        dictionaryIndex={dictionaryIndex}
+        setDictionaryIndex={setDictionaryIndex}
       />
     </div>
   );

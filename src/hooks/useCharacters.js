@@ -13,7 +13,18 @@ export const useCharacters = () => {
 
   // Fetch characters for a radical
   const fetchCharactersForRadical = useCallback(async (radical) => {
-    const radicalChar = radical.boThu.split(' (')[0]; // Get main radical character
+    // Extract the main radical character (before parentheses)
+    let radicalChar = radical.boThu;
+    if (radicalChar.includes('(')) {
+      radicalChar = radicalChar.split('(')[0].trim();
+    }
+    
+    // Ensure we have exactly one character
+    if ([...radicalChar].length !== 1) {
+      console.error('Invalid radical character:', radicalChar, 'from boThu:', radical.boThu);
+      throw new Error(`Invalid radical character: ${radicalChar}`);
+    }
+    
     const cacheKey = radical.stt;
     
     // Check if already cached
@@ -35,8 +46,11 @@ export const useCharacters = () => {
     setLoadingCharacters(prev => new Set([...prev, cacheKey]));
     
     try {
+      console.log('Fetching characters for radical:', radicalChar, 'from boThu:', radical.boThu);
       const response = await callApi(`/api/characters-from-component?component=${encodeURIComponent(radicalChar)}`);
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('API Error:', errorData);
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       

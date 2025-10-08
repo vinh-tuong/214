@@ -274,12 +274,8 @@ const FlashcardModal = ({
                   </div>
                   
                   {/* Supporting information */}
-                  <div className="italic text-lg sm:text-xl md:text-2xl mb-3 sm:mb-6 text-gray-700">
-                    {currentRadical.tenBoThu} • {currentRadical.phienAm}
-                  </div>
-                  
-                  <div className="text-base sm:text-lg md:text-xl text-gray-600 mb-4 sm:mb-6">
-                    {currentRadical.yNghia}
+                  <div className="text-lg sm:text-xl md:text-2xl mb-4 sm:mb-6 text-gray-700">
+                    <span className="font-bold">{currentRadical.tenBoThu}</span> • {currentRadical.phienAm} • <span className="italic">{currentRadical.yNghia}</span>
                   </div>
                   
                 </div>

@@ -16,8 +16,31 @@ export default function handler(req, res) {
     const Hanzi = ensureHanzi();
     const characters = Hanzi.getCharactersWithComponent(component) || [];
     
+    // Sort characters by frequency (most popular first)
+    const charactersWithFrequency = characters.map(char => {
+      const frequency = Hanzi.getCharacterFrequency(char);
+      return {
+        character: char,
+        frequency: frequency || { count: 0, percentage: 0 }
+      };
+    });
+    
+    // Sort by frequency count (descending)
+    charactersWithFrequency.sort((a, b) => {
+      const countA = parseInt(a.frequency.count) || 0;
+      const countB = parseInt(b.frequency.count) || 0;
+      return countB - countA;
+    });
+    
+    // Extract just the characters in sorted order
+    const sortedCharacters = charactersWithFrequency.map(item => item.character);
+    
     cache(res, 43200); // 12h, character lists rarely change
-    return json(res, 200, { component, characters });
+    return json(res, 200, { 
+      component, 
+      characters: sortedCharacters,
+      total: sortedCharacters.length
+    });
   } catch (e) {
     return json(res, 500, { error: 'characters_from_component_failed', message: String(e) });
   }

@@ -1,6 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import { ExamplesCarousel } from '../carousel/ExamplesCarousel';
 import { ImageCarousel } from '../carousel/ImageCarousel';
 import DictionaryCarousel from '../carousel/DictionaryCarousel';
@@ -53,13 +54,26 @@ export const SearchModal = ({
               </p>
             )}
           </div>
-          <Button
-            onClick={onClose}
-            variant="outline"
-            className="rounded-full ml-2 flex-shrink-0"
-          >
-            ✕
-          </Button>
+          <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+            {searchQuery && [...searchQuery].some(ch => /[\u4e00-\u9fff]/.test(ch)) && (
+              <Link to={`/character/${encodeURIComponent(searchQuery)}`} onClick={onClose}>
+                <Button
+                  variant="outline"
+                  className="rounded-full"
+                  title="Xem trang chi tiết"
+                >
+                  <ExternalLink size={18} />
+                </Button>
+              </Link>
+            )}
+            <Button
+              onClick={onClose}
+              variant="outline"
+              className="rounded-full"
+            >
+              ✕
+            </Button>
+          </div>
         </div>
 
         {/* Modal Content */}

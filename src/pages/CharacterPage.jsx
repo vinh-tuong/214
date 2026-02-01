@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Search } from 'lucide-react';
+import { ArrowLeft, Search, X } from 'lucide-react';
 import DictionaryCarousel from '../components/carousel/DictionaryCarousel';
 import { CharacterWriter } from '../components/carousel/CharacterWriter';
 import { ImageCarousel } from '../components/carousel/ImageCarousel';
@@ -27,9 +27,10 @@ export const CharacterPage = () => {
   const [dictionaryResults, setDictionaryResults] = useState(null);
   const [radicalInfo, setRadicalInfo] = useState(null);
   const [decomposedRadicals, setDecomposedRadicals] = useState(null);
-  const [dictionaryIndex, setDictionaryIndex] = useState(0);
+  const [dictionaryIndices, setDictionaryIndices] = useState({});
   const [imageIndex, setImageIndex] = useState(0);
-  const [showAllExamples, setShowAllExamples] = useState(false);
+  const [showAllExamples, setShowAllExamples] = useState({});
+  const [zoomedImage, setZoomedImage] = useState(null); // For image popup
 
   // Create radical mapping
   const radicalMapping = React.useMemo(() => createRadicalMapping(), []);
@@ -61,40 +62,62 @@ export const CharacterPage = () => {
     }
   }, []);
 
-  // Fetch character examples
+  // Fetch character examples for each character
   const fetchCharExamples = useCallback(async (text) => {
     try {
       const chars = [...text].filter(ch => /[\u4e00-\u9fff]/.test(ch));
       if (chars.length === 0) return null;
       
-      const firstChar = chars[0];
-      const response = await callApi(`/api/examples?char=${encodeURIComponent(firstChar)}`);
+      // Fetch examples for each character in parallel
+      const results = {};
+      await Promise.all(
+        chars.map(async (char) => {
+          try {
+            const response = await callApi(`/api/examples?char=${encodeURIComponent(char)}`);
+            if (response.ok) {
+              const data = await response.json();
+              if (data.examples && data.examples.length > 0) {
+                results[char] = data.examples;
+              }
+            }
+          } catch (error) {
+            console.error(`Error fetching examples for ${char}:`, error);
+          }
+        })
+      );
       
-      if (!response.ok) return null;
-      const data = await response.json();
-      
-      if (data.examples && data.examples.length > 0) {
-        return data.examples;
-      }
-      return null;
+      return Object.keys(results).length > 0 ? results : null;
     } catch (error) {
       console.error('Error fetching examples:', error);
       return null;
     }
   }, []);
 
-  // Fetch dictionary results
+  // Fetch dictionary results for each character
   const fetchDictionaryResults = useCallback(async (text) => {
     try {
-      const response = await callApi(`/api/dictionary-search?text=${encodeURIComponent(text)}&mode=all`);
+      const chars = [...text].filter(ch => /[\u4e00-\u9fff]/.test(ch));
+      if (chars.length === 0) return null;
       
-      if (!response.ok) return null;
-      const data = await response.json();
+      // Fetch dictionary for each character in parallel
+      const results = {};
+      await Promise.all(
+        chars.map(async (char) => {
+          try {
+            const response = await callApi(`/api/dictionary-search?text=${encodeURIComponent(char)}&mode=all`);
+            if (response.ok) {
+              const data = await response.json();
+              if (data.results && data.results.length > 0) {
+                results[char] = data.results;
+              }
+            }
+          } catch (error) {
+            console.error(`Error fetching dictionary for ${char}:`, error);
+          }
+        })
+      );
       
-      if (data.results && data.results.length > 0) {
-        return data.results;
-      }
-      return null;
+      return Object.keys(results).length > 0 ? results : null;
     } catch (error) {
       console.error('Error fetching dictionary results:', error);
       return null;
@@ -167,9 +190,9 @@ export const CharacterPage = () => {
     
     const loadData = async () => {
       setIsLoading(true);
-      setDictionaryIndex(0);
+      setDictionaryIndices({});
       setImageIndex(0);
-      setShowAllExamples(false);
+      setShowAllExamples({});
       
       // Search for radical info (sync) - check if character IS a radical
       const radicals = searchRadical(character);
@@ -415,7 +438,13 @@ export const CharacterPage = () => {
                         <img 
                           src={`/images/${radical.hinhAnh[0]}`} 
                           alt={radical.tenBoThu}
-                          className="w-16 h-16 object-contain rounded-lg bg-white"
+                          className="w-16 h-16 object-contain rounded-lg bg-white cursor-pointer hover:opacity-80 transition-opacity hover:ring-2 hover:ring-teal-400"
+                          onClick={() => setZoomedImage({
+                            src: `/images/${radical.hinhAnh[0]}`,
+                            alt: radical.tenBoThu,
+                            title: `${radical.boThu} - ${radical.tenBoThu}`
+                          })}
+                          title="Click để phóng to"
                         />
                       )}
                     </div>
@@ -460,76 +489,103 @@ export const CharacterPage = () => {
             )}
 
             {/* Character Examples - High Frequency Words (like HanziCraft) */}
-            {charExamples && charExamples.length > 0 && (
-              <div className="bg-white rounded-2xl shadow p-6">
-                <h2 className="text-lg font-semibold text-green-700 mb-4">
-                  Từ vựng phổ biến chứa "{character}"
-                  <span className="text-sm font-normal text-gray-500 ml-2">
-                    ({charExamples.flat().length} từ)
-                  </span>
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {charExamples.flat().slice(0, 15).map((example, index) => (
-                    <Link
-                      key={index}
-                      to={`/character/${encodeURIComponent(example.simplified)}`}
-                      className="block p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors border border-green-100"
-                    >
-                      <div className="text-xl font-bold text-green-800 mb-1">
-                        {example.simplified}
+            {charExamples && Object.keys(charExamples).length > 0 && (
+              <div className="space-y-4">
+                {/* Iterate in order of characters in the search string */}
+                {[...character]
+                  .filter(ch => /[\u4e00-\u9fff]/.test(ch) && charExamples[ch])
+                  .map((char) => {
+                  const examples = charExamples[char];
+                  const flatExamples = examples.flat();
+                  const isExpanded = showAllExamples[char] || false;
+                  
+                  return (
+                    <div key={char} className="bg-white rounded-2xl shadow p-6">
+                      <h2 className="text-lg font-semibold text-green-700 mb-4">
+                        Từ vựng phổ biến chứa "<Link to={`/character/${encodeURIComponent(char)}`} className="hover:underline">{char}</Link>"
+                        <span className="text-sm font-normal text-gray-500 ml-2">
+                          ({flatExamples.length} từ)
+                        </span>
+                      </h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {flatExamples.slice(0, 15).map((example, index) => (
+                          <Link
+                            key={index}
+                            to={`/character/${encodeURIComponent(example.simplified)}`}
+                            className="block p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors border border-green-100"
+                          >
+                            <div className="text-xl font-bold text-green-800 mb-1">
+                              {example.simplified}
+                            </div>
+                            <div className="text-sm text-green-600 mb-1">
+                              {convertPinyinTones(example.pinyin)}
+                            </div>
+                            <div className="text-sm text-gray-600 line-clamp-2">
+                              {example.definition}
+                            </div>
+                          </Link>
+                        ))}
                       </div>
-                      <div className="text-sm text-green-600 mb-1">
-                        {convertPinyinTones(example.pinyin)}
-                      </div>
-                      <div className="text-sm text-gray-600 line-clamp-2">
-                        {example.definition}
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-                {charExamples.flat().length > 15 && (
-                  <div className="mt-4 text-center">
-                    <button
-                      onClick={() => setShowAllExamples(!showAllExamples)}
-                      className="text-green-600 hover:text-green-800 text-sm font-medium"
-                    >
-                      {showAllExamples ? 'Thu gọn' : `Xem thêm ${charExamples.flat().length - 15} từ...`}
-                    </button>
-                  </div>
-                )}
-                {showAllExamples && charExamples.flat().length > 15 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
-                    {charExamples.flat().slice(15).map((example, index) => (
-                      <Link
-                        key={index + 15}
-                        to={`/character/${encodeURIComponent(example.simplified)}`}
-                        className="block p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors border border-green-100"
-                      >
-                        <div className="text-xl font-bold text-green-800 mb-1">
-                          {example.simplified}
+                      {flatExamples.length > 15 && (
+                        <div className="mt-4 text-center">
+                          <button
+                            onClick={() => setShowAllExamples(prev => ({ ...prev, [char]: !prev[char] }))}
+                            className="text-green-600 hover:text-green-800 text-sm font-medium"
+                          >
+                            {isExpanded ? 'Thu gọn' : `Xem thêm ${flatExamples.length - 15} từ...`}
+                          </button>
                         </div>
-                        <div className="text-sm text-green-600 mb-1">
-                          {convertPinyinTones(example.pinyin)}
+                      )}
+                      {isExpanded && flatExamples.length > 15 && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
+                          {flatExamples.slice(15).map((example, index) => (
+                            <Link
+                              key={index + 15}
+                              to={`/character/${encodeURIComponent(example.simplified)}`}
+                              className="block p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors border border-green-100"
+                            >
+                              <div className="text-xl font-bold text-green-800 mb-1">
+                                {example.simplified}
+                              </div>
+                              <div className="text-sm text-green-600 mb-1">
+                                {convertPinyinTones(example.pinyin)}
+                              </div>
+                              <div className="text-sm text-gray-600 line-clamp-2">
+                                {example.definition}
+                              </div>
+                            </Link>
+                          ))}
                         </div>
-                        <div className="text-sm text-gray-600 line-clamp-2">
-                          {example.definition}
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                )}
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
 
             {/* Dictionary Results */}
-            {dictionaryResults && dictionaryResults.length > 0 && (
-              <div className="bg-white rounded-2xl shadow p-6">
-                <h2 className="text-lg font-semibold text-purple-700 mb-4">Từ điển</h2>
-                <DictionaryCarousel 
-                  dictionaryResults={dictionaryResults}
-                  currentIndex={dictionaryIndex}
-                  onIndexChange={setDictionaryIndex}
-                />
+            {dictionaryResults && Object.keys(dictionaryResults).length > 0 && (
+              <div className="space-y-4">
+                {/* Iterate in order of characters in the search string */}
+                {[...character]
+                  .filter(ch => /[\u4e00-\u9fff]/.test(ch) && dictionaryResults[ch])
+                  .map((char) => {
+                  const results = dictionaryResults[char];
+                  const currentIndex = dictionaryIndices[char] || 0;
+                  
+                  return (
+                    <div key={char} className="bg-white rounded-2xl shadow p-6">
+                      <h2 className="text-lg font-semibold text-purple-700 mb-4">
+                        Từ điển chứa "<Link to={`/character/${encodeURIComponent(char)}`} className="hover:underline">{char}</Link>"
+                      </h2>
+                      <DictionaryCarousel 
+                        dictionaryResults={results}
+                        currentIndex={currentIndex}
+                        onIndexChange={(newIndex) => setDictionaryIndices(prev => ({ ...prev, [char]: newIndex }))}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             )}
 
@@ -556,6 +612,48 @@ export const CharacterPage = () => {
           <p className="mt-4 text-gray-400">From Munich with love ❤️</p>
         </footer>
       </div>
+
+      {/* Image Zoom Modal */}
+      {zoomedImage && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          onClick={() => setZoomedImage(null)}
+        >
+          <div 
+            className="relative bg-white rounded-2xl p-4 max-w-lg w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setZoomedImage(null)}
+              className="absolute top-2 right-2 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            >
+              <X size={20} className="text-gray-600" />
+            </button>
+            
+            {/* Title */}
+            {zoomedImage.title && (
+              <h3 className="text-lg font-semibold text-teal-700 mb-4 pr-8">
+                {zoomedImage.title}
+              </h3>
+            )}
+            
+            {/* Zoomed Image */}
+            <div className="flex items-center justify-center bg-gray-50 rounded-xl p-4">
+              <img 
+                src={zoomedImage.src} 
+                alt={zoomedImage.alt}
+                className="max-w-full max-h-[60vh] object-contain"
+              />
+            </div>
+            
+            {/* Close hint */}
+            <p className="text-center text-sm text-gray-400 mt-4">
+              Click bên ngoài hoặc nút X để đóng
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

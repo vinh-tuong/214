@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { convertPinyinTones } from '../../utils/pinyinUtils';
 
 /**
  * Carousel component for displaying character examples
@@ -32,7 +33,7 @@ export const ExamplesCarousel = ({ examples, currentIndex, onIndexChange }) => {
           {currentExample.simplified}
         </div>
         <div className="text-green-700 text-sm mb-1">
-          {currentExample.pinyin}
+          {convertPinyinTones(currentExample.pinyin)}
         </div>
         <div className="text-green-600 text-sm">
           {currentExample.definition}

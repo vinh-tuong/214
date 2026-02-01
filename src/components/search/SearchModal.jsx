@@ -6,6 +6,7 @@ import { ExamplesCarousel } from '../carousel/ExamplesCarousel';
 import { ImageCarousel } from '../carousel/ImageCarousel';
 import DictionaryCarousel from '../carousel/DictionaryCarousel';
 import { CharacterWriter } from '../carousel/CharacterWriter';
+import { convertPinyinTones } from '../../utils/pinyinUtils';
 
 /**
  * Search results modal component
@@ -214,7 +215,7 @@ export const SearchModal = ({
                   <div className="space-y-1">
                     {charDefinition.map((entry, index) => (
                       <div key={index} className="text-blue-700">
-                        <span className="font-medium">{entry.pinyin}</span>
+                        <span className="font-medium">{convertPinyinTones(entry.pinyin)}</span>
                         <span className="mx-2">•</span>
                         <span>{entry.definition}</span>
                       </div>
@@ -231,7 +232,7 @@ export const SearchModal = ({
                         <div className="space-y-1">
                           {definitions.map((entry, index) => (
                             <div key={index} className="text-blue-700">
-                              <span className="font-medium">{entry.pinyin}</span>
+                              <span className="font-medium">{convertPinyinTones(entry.pinyin)}</span>
                               <span className="mx-2">•</span>
                               <span>{entry.definition}</span>
                             </div>

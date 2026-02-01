@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { convertPinyinTones } from '../../utils/pinyinUtils';
 
 const DictionaryCarousel = ({ dictionaryResults, currentIndex, onIndexChange }) => {
   if (!dictionaryResults || dictionaryResults.length === 0) return null;
@@ -29,7 +30,7 @@ const DictionaryCarousel = ({ dictionaryResults, currentIndex, onIndexChange }) 
               {allEntries[0].simplified}
             </div>
             <div className="text-purple-700 text-sm mb-1">
-              {allEntries[0].pinyin}
+              {convertPinyinTones(allEntries[0].pinyin)}
             </div>
             <div className="text-purple-600 text-sm">
               {allEntries[0].definition}

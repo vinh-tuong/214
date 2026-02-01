@@ -7,6 +7,7 @@ import { CharacterWriter } from '../components/carousel/CharacterWriter';
 import { ImageCarousel } from '../components/carousel/ImageCarousel';
 import { callApi } from '../lib/utils';
 import { createRadicalMapping } from '../utils/radicalUtils';
+import { convertPinyinTones } from '../utils/pinyinUtils';
 
 /**
  * Character detail page - displays full information about a Chinese character
@@ -431,7 +432,7 @@ export const CharacterPage = () => {
                   <div className="space-y-2">
                     {charDefinition.map((entry, index) => (
                       <div key={index} className="text-gray-700 p-3 bg-blue-50 rounded-lg">
-                        <span className="font-medium text-blue-800">{entry.pinyin}</span>
+                        <span className="font-medium text-blue-800">{convertPinyinTones(entry.pinyin)}</span>
                         <span className="mx-2">•</span>
                         <span>{entry.definition}</span>
                       </div>
@@ -445,7 +446,7 @@ export const CharacterPage = () => {
                         <div className="space-y-2">
                           {definitions.map((entry, index) => (
                             <div key={index} className="text-gray-700 p-2 bg-blue-50 rounded-lg">
-                              <span className="font-medium text-blue-800">{entry.pinyin}</span>
+                              <span className="font-medium text-blue-800">{convertPinyinTones(entry.pinyin)}</span>
                               <span className="mx-2">•</span>
                               <span>{entry.definition}</span>
                             </div>
@@ -478,7 +479,7 @@ export const CharacterPage = () => {
                         {example.simplified}
                       </div>
                       <div className="text-sm text-green-600 mb-1">
-                        {example.pinyin}
+                        {convertPinyinTones(example.pinyin)}
                       </div>
                       <div className="text-sm text-gray-600 line-clamp-2">
                         {example.definition}
@@ -508,7 +509,7 @@ export const CharacterPage = () => {
                           {example.simplified}
                         </div>
                         <div className="text-sm text-green-600 mb-1">
-                          {example.pinyin}
+                          {convertPinyinTones(example.pinyin)}
                         </div>
                         <div className="text-sm text-gray-600 line-clamp-2">
                           {example.definition}

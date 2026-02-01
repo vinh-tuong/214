@@ -29,7 +29,7 @@ export const ExamplesCarousel = ({ examples, currentIndex, onIndexChange }) => {
       {/* Example content */}
       <div className="flex-1 text-center min-w-0">
         <div className="text-lg font-semibold text-green-800 mb-2">
-          {currentExample.traditional} {currentExample.simplified !== currentExample.traditional && `(${currentExample.simplified})`}
+          {currentExample.simplified}
         </div>
         <div className="text-green-700 text-sm mb-1">
           {currentExample.pinyin}

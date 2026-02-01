@@ -26,7 +26,7 @@ const DictionaryCarousel = ({ dictionaryResults, currentIndex, onIndexChange }) 
         <div className="flex-1 min-w-0">
           <div className="text-center">
             <div className="text-lg font-semibold text-purple-800 mb-2">
-              {allEntries[0].traditional} {allEntries[0].simplified !== allEntries[0].traditional && `(${allEntries[0].simplified})`}
+              {allEntries[0].simplified}
             </div>
             <div className="text-purple-700 text-sm mb-1">
               {allEntries[0].pinyin}

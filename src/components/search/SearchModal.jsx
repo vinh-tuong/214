@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ExamplesCarousel } from '../carousel/ExamplesCarousel';
 import { ImageCarousel } from '../carousel/ImageCarousel';
 import DictionaryCarousel from '../carousel/DictionaryCarousel';
+import { CharacterWriter } from '../carousel/CharacterWriter';
 
 /**
  * Search results modal component
@@ -165,6 +166,24 @@ export const SearchModal = ({
                     }`}
                   />
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Character Writer - Stroke Animation */}
+          {searchQuery && [...searchQuery].some(ch => /[\u4e00-\u9fff]/.test(ch)) && (
+            <div className="mt-6 p-4 bg-amber-50 rounded-lg">
+              <div className="font-semibold text-amber-800 mb-4 text-sm">
+                Nét viết của "{searchQuery}":
+              </div>
+              <div className="flex flex-wrap justify-center gap-6">
+                {[...searchQuery]
+                  .filter(ch => /[\u4e00-\u9fff]/.test(ch))
+                  .map((char, index) => (
+                    <div key={index} className="flex flex-col items-center">
+                      <CharacterWriter character={char} size={120} />
+                    </div>
+                  ))}
               </div>
             </div>
           )}

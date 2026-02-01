@@ -6,7 +6,7 @@ import { createRadicalMapping } from '../utils/radicalUtils';
  * Custom hook for managing search functionality
  */
 export const useSearch = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('安');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);

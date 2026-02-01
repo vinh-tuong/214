@@ -1,5 +1,7 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { BookOpen } from "lucide-react";
 import { useSpeechSynthesis } from "./hooks/useSpeechSynthesis";
 import { useSwipe } from "./hooks/useSwipe";
 import FlashcardModal from "./components/FlashcardModal";
@@ -208,6 +210,16 @@ function App() {
             >
               {isSearching ? 'Đang tìm...' : 'Tìm kiếm'}
             </Button>
+            <Link to="/character">
+              <Button
+                variant="outline"
+                className="px-4 py-2 rounded-lg border-amber-500 text-amber-700 hover:bg-amber-50"
+                title="Tra cứu Hán tự"
+              >
+                <BookOpen size={18} className="mr-1" />
+                <span className="hidden sm:inline">Tra cứu</span>
+              </Button>
+            </Link>
           </div>
         </header>
 

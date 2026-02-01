@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { ExamplesCarousel } from '../components/carousel/ExamplesCarousel';
+import { ArrowLeft, Search } from 'lucide-react';
 import DictionaryCarousel from '../components/carousel/DictionaryCarousel';
 import { CharacterWriter } from '../components/carousel/CharacterWriter';
 import { ImageCarousel } from '../components/carousel/ImageCarousel';
@@ -14,19 +13,22 @@ import { createRadicalMapping } from '../utils/radicalUtils';
  */
 export const CharacterPage = () => {
   const { character: rawCharacter } = useParams();
+  const navigate = useNavigate();
   
   // Decode URL-encoded character
   const character = rawCharacter ? decodeURIComponent(rawCharacter) : '';
   
   // State
   const [isLoading, setIsLoading] = useState(true);
+  const [searchInput, setSearchInput] = useState('');
   const [charDefinition, setCharDefinition] = useState(null);
   const [charExamples, setCharExamples] = useState(null);
   const [dictionaryResults, setDictionaryResults] = useState(null);
   const [radicalInfo, setRadicalInfo] = useState(null);
-  const [examplesIndex, setExamplesIndex] = useState(0);
+  const [decomposedRadicals, setDecomposedRadicals] = useState(null);
   const [dictionaryIndex, setDictionaryIndex] = useState(0);
   const [imageIndex, setImageIndex] = useState(0);
+  const [showAllExamples, setShowAllExamples] = useState(false);
 
   // Create radical mapping
   const radicalMapping = React.useMemo(() => createRadicalMapping(), []);
@@ -98,7 +100,7 @@ export const CharacterPage = () => {
     }
   }, []);
 
-  // Search for radical info
+  // Search for radical info (check if character IS a radical)
   const searchRadical = useCallback((query) => {
     if (!query) return null;
     
@@ -117,52 +119,211 @@ export const CharacterPage = () => {
     return results.length > 0 ? results : null;
   }, [radicalMapping]);
 
+  // Decompose character to find its radicals
+  const fetchDecomposition = useCallback(async (text) => {
+    try {
+      const chars = [...text].filter(ch => /[\u4e00-\u9fff]/.test(ch));
+      if (chars.length === 0) return null;
+      
+      const results = [];
+      
+      for (const char of chars) {
+        // Skip if the character itself is a radical
+        if (radicalMapping.has(char)) continue;
+        
+        const response = await callApi(`/api/decompose?ch=${encodeURIComponent(char)}`);
+        if (!response.ok) continue;
+        
+        const data = await response.json();
+        
+        // Get components from level 2 (radical level)
+        const components = data.components2 || data.components || [];
+        
+        // Find radicals in the components
+        for (const component of components) {
+          if (radicalMapping.has(component)) {
+            const radical = radicalMapping.get(component);
+            if (!results.find(r => r.stt === radical.stt)) {
+              results.push({
+                ...radical,
+                fromChar: char
+              });
+            }
+          }
+        }
+      }
+      
+      return results.length > 0 ? results : null;
+    } catch (error) {
+      console.error('Error fetching decomposition:', error);
+      return null;
+    }
+  }, [radicalMapping]);
+
   // Load all data
   useEffect(() => {
     if (!character) return;
     
     const loadData = async () => {
       setIsLoading(true);
-      setExamplesIndex(0);
       setDictionaryIndex(0);
       setImageIndex(0);
+      setShowAllExamples(false);
       
-      // Search for radical info (sync)
+      // Search for radical info (sync) - check if character IS a radical
       const radicals = searchRadical(character);
       setRadicalInfo(radicals);
       
       // Fetch all data in parallel
-      const [definition, examples, dictionary] = await Promise.all([
+      const [definition, examples, dictionary, decomposed] = await Promise.all([
         fetchCharDefinition(character),
         fetchCharExamples(character),
-        fetchDictionaryResults(character)
+        fetchDictionaryResults(character),
+        fetchDecomposition(character)
       ]);
       
       setCharDefinition(definition);
       setCharExamples(examples);
+      setDecomposedRadicals(decomposed);
       setDictionaryResults(dictionary);
       setIsLoading(false);
     };
     
     loadData();
-  }, [character, fetchCharDefinition, fetchCharExamples, fetchDictionaryResults, searchRadical]);
+  }, [character, fetchCharDefinition, fetchCharExamples, fetchDictionaryResults, fetchDecomposition, searchRadical]);
 
   // Check if character contains Chinese characters
   const hasChinese = character && [...character].some(ch => /[\u4e00-\u9fff]/.test(ch));
+
+  // Empty state - show search page like HanziCraft
+  if (!character) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-amber-50 to-amber-100 flex flex-col">
+        {/* Main content - centered */}
+        <div className="flex-1 flex flex-col items-center justify-center p-6">
+          <div className="text-center max-w-2xl mx-auto">
+            {/* Logo/Title */}
+            <h1 className="text-4xl sm:text-5xl font-bold text-amber-800 mb-4">
+              漢字 <span className="text-amber-600">Hán Tự</span>
+            </h1>
+            <p className="text-lg text-gray-600 mb-8">
+              Tra cứu thông tin chi tiết về ký tự Trung Quốc: nét viết, bộ thủ, định nghĩa, từ vựng phổ biến
+            </p>
+            
+            {/* Search Box */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+              <p className="text-gray-500 mb-4 text-sm">
+                Nhập ký tự Trung Quốc để bắt đầu khám phá
+              </p>
+              <div className="flex gap-3">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    placeholder="Ví dụ: 安, 好, 中国..."
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && searchInput.trim()) {
+                        navigate(`/character/${encodeURIComponent(searchInput.trim())}`);
+                      }
+                    }}
+                    className="w-full px-4 py-3 pl-12 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    style={{ fontSize: '18px' }}
+                    autoFocus
+                  />
+                  <Search size={22} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                </div>
+                <Button
+                  onClick={() => {
+                    if (searchInput.trim()) {
+                      navigate(`/character/${encodeURIComponent(searchInput.trim())}`);
+                    }
+                  }}
+                  disabled={!searchInput.trim()}
+                  className="px-6 py-3 bg-amber-500 text-white rounded-xl hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed text-lg font-medium"
+                >
+                  Tìm kiếm
+                </Button>
+              </div>
+            </div>
+            
+            {/* Quick examples */}
+            <div className="mt-8">
+              <p className="text-gray-500 text-sm mb-3">Ví dụ nhanh:</p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {['安', '好', '中', '国', '人', '心', '水', '火', '木', '金'].map((char) => (
+                  <Link
+                    key={char}
+                    to={`/character/${encodeURIComponent(char)}`}
+                    className="px-4 py-2 bg-white rounded-full text-xl font-medium text-amber-700 hover:bg-amber-100 transition-colors shadow-sm border border-amber-200"
+                  >
+                    {char}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Footer */}
+        <footer className="text-center py-6 text-sm text-gray-500">
+          <Link to="/" className="text-amber-600 hover:underline">
+            ← Quay về trang Flashcards
+          </Link>
+          <p className="mt-2 text-gray-400">From Munich with love ❤️</p>
+        </footer>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-amber-50 p-4 sm:p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <header className="flex items-center gap-4 mb-6">
-          <Link to="/">
-            <Button variant="outline" className="rounded-full">
-              <ArrowLeft size={20} />
+        <header className="flex flex-col gap-4 mb-6">
+          <div className="flex items-center gap-4">
+            <Link to="/character">
+              <Button variant="outline" className="rounded-full">
+                <ArrowLeft size={20} />
+              </Button>
+            </Link>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+              Ký tự: {character}
+            </h1>
+          </div>
+          
+          {/* Search Input */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Tìm kiếm ký tự khác..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && searchInput.trim()) {
+                    navigate(`/character/${encodeURIComponent(searchInput.trim())}`);
+                    setSearchInput('');
+                  }
+                }}
+                className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                style={{ fontSize: '16px' }}
+              />
+              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            </div>
+            <Button
+              onClick={() => {
+                if (searchInput.trim()) {
+                  navigate(`/character/${encodeURIComponent(searchInput.trim())}`);
+                  setSearchInput('');
+                }
+              }}
+              disabled={!searchInput.trim()}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Tìm
             </Button>
-          </Link>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-            Ký tự: {character}
-          </h1>
+          </div>
         </header>
 
         {/* Loading state */}
@@ -221,6 +382,47 @@ export const CharacterPage = () => {
               </div>
             )}
 
+            {/* Decomposed Radicals - Radicals found in the character */}
+            {decomposedRadicals && decomposedRadicals.length > 0 && (
+              <div className="bg-white rounded-2xl shadow p-6">
+                <h2 className="text-lg font-semibold text-teal-700 mb-4">
+                  Bộ thủ của "{character}"
+                </h2>
+                <div className="space-y-4">
+                  {decomposedRadicals.map((radical, idx) => (
+                    <div key={idx} className="flex items-center gap-4 p-4 bg-teal-50 rounded-xl">
+                      <Link 
+                        to={`/character/${encodeURIComponent(radical.boThu)}`}
+                        className="text-4xl font-bold text-teal-700 hover:text-teal-900 transition-colors"
+                      >
+                        {radical.boThu}
+                      </Link>
+                      <div className="flex-1">
+                        <div className="font-bold text-teal-800">
+                          {radical.tenBoThu}
+                        </div>
+                        <div className="text-sm text-teal-600">
+                          {radical.phienAm} • <span className="italic">{radical.yNghia}</span>
+                        </div>
+                        {radical.fromChar && radical.fromChar !== character && (
+                          <div className="text-xs text-teal-500 mt-1">
+                            Từ ký tự: {radical.fromChar}
+                          </div>
+                        )}
+                      </div>
+                      {radical.hinhAnh && radical.hinhAnh.length > 0 && (
+                        <img 
+                          src={`/images/${radical.hinhAnh[0]}`} 
+                          alt={radical.tenBoThu}
+                          className="w-16 h-16 object-contain rounded-lg bg-white"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Character Definition */}
             {charDefinition && (
               <div className="bg-white rounded-2xl shadow p-6">
@@ -256,15 +458,65 @@ export const CharacterPage = () => {
               </div>
             )}
 
-            {/* Character Examples */}
+            {/* Character Examples - High Frequency Words (like HanziCraft) */}
             {charExamples && charExamples.length > 0 && (
               <div className="bg-white rounded-2xl shadow p-6">
-                <h2 className="text-lg font-semibold text-green-700 mb-4">Từ vựng liên quan</h2>
-                <ExamplesCarousel 
-                  examples={charExamples}
-                  currentIndex={examplesIndex}
-                  onIndexChange={setExamplesIndex}
-                />
+                <h2 className="text-lg font-semibold text-green-700 mb-4">
+                  Từ vựng phổ biến chứa "{character}"
+                  <span className="text-sm font-normal text-gray-500 ml-2">
+                    ({charExamples.flat().length} từ)
+                  </span>
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {charExamples.flat().slice(0, 15).map((example, index) => (
+                    <Link
+                      key={index}
+                      to={`/character/${encodeURIComponent(example.simplified)}`}
+                      className="block p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors border border-green-100"
+                    >
+                      <div className="text-xl font-bold text-green-800 mb-1">
+                        {example.simplified}
+                      </div>
+                      <div className="text-sm text-green-600 mb-1">
+                        {example.pinyin}
+                      </div>
+                      <div className="text-sm text-gray-600 line-clamp-2">
+                        {example.definition}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                {charExamples.flat().length > 15 && (
+                  <div className="mt-4 text-center">
+                    <button
+                      onClick={() => setShowAllExamples(!showAllExamples)}
+                      className="text-green-600 hover:text-green-800 text-sm font-medium"
+                    >
+                      {showAllExamples ? 'Thu gọn' : `Xem thêm ${charExamples.flat().length - 15} từ...`}
+                    </button>
+                  </div>
+                )}
+                {showAllExamples && charExamples.flat().length > 15 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
+                    {charExamples.flat().slice(15).map((example, index) => (
+                      <Link
+                        key={index + 15}
+                        to={`/character/${encodeURIComponent(example.simplified)}`}
+                        className="block p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors border border-green-100"
+                      >
+                        <div className="text-xl font-bold text-green-800 mb-1">
+                          {example.simplified}
+                        </div>
+                        <div className="text-sm text-green-600 mb-1">
+                          {example.pinyin}
+                        </div>
+                        <div className="text-sm text-gray-600 line-clamp-2">
+                          {example.definition}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
@@ -297,8 +549,8 @@ export const CharacterPage = () => {
 
         {/* Footer */}
         <footer className="mt-8 text-center text-xs text-gray-500">
-          <Link to="/" className="text-blue-500 hover:underline">
-            ← Quay về trang chủ
+          <Link to="/character" className="text-blue-500 hover:underline">
+            ← Quay về trang tra cứu
           </Link>
           <p className="mt-4 text-gray-400">From Munich with love ❤️</p>
         </footer>

@@ -10,6 +10,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
+        <Route path="/character" element={<CharacterPage />} />
         <Route path="/character/:character" element={<CharacterPage />} />
       </Routes>
     </BrowserRouter>

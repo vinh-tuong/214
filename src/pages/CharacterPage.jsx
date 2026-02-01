@@ -13,7 +13,10 @@ import { createRadicalMapping } from '../utils/radicalUtils';
  * Character detail page - displays full information about a Chinese character
  */
 export const CharacterPage = () => {
-  const { character } = useParams();
+  const { character: rawCharacter } = useParams();
+  
+  // Decode URL-encoded character
+  const character = rawCharacter ? decodeURIComponent(rawCharacter) : '';
   
   // State
   const [isLoading, setIsLoading] = useState(true);
@@ -40,10 +43,13 @@ export const CharacterPage = () => {
         response = await callApi(`/api/define?char=${encodeURIComponent(text)}&variant=s`);
       }
       
-      if (response.entries) {
-        return response.entries;
-      } else if (response.result) {
-        return response.result;
+      if (!response.ok) return null;
+      const data = await response.json();
+      
+      if (data.entries) {
+        return data.entries;
+      } else if (data.result) {
+        return data.result;
       }
       return null;
     } catch (error) {
@@ -61,8 +67,11 @@ export const CharacterPage = () => {
       const firstChar = chars[0];
       const response = await callApi(`/api/examples?char=${encodeURIComponent(firstChar)}`);
       
-      if (response.examples && response.examples.length > 0) {
-        return response.examples;
+      if (!response.ok) return null;
+      const data = await response.json();
+      
+      if (data.examples && data.examples.length > 0) {
+        return data.examples;
       }
       return null;
     } catch (error) {
@@ -76,8 +85,11 @@ export const CharacterPage = () => {
     try {
       const response = await callApi(`/api/dictionary-search?text=${encodeURIComponent(text)}&mode=all`);
       
-      if (response.results && response.results.length > 0) {
-        return response.results;
+      if (!response.ok) return null;
+      const data = await response.json();
+      
+      if (data.results && data.results.length > 0) {
+        return data.results;
       }
       return null;
     } catch (error) {
@@ -268,8 +280,8 @@ export const CharacterPage = () => {
               </div>
             )}
 
-            {/* No results */}
-            {!radicalInfo && !charDefinition && !charExamples && !dictionaryResults && (
+            {/* No results - only show if no Chinese character and no other data */}
+            {!hasChinese && !radicalInfo && !charDefinition && !charExamples && !dictionaryResults && (
               <div className="bg-white rounded-2xl shadow p-6 text-center">
                 <div className="text-6xl mb-4">🔍</div>
                 <p className="text-gray-600 text-lg mb-2">

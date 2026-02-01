@@ -240,7 +240,7 @@ function App() {
                   }`}
                   onClick={() => setStroke("popular")}
                 >
-                  ⭐ Popular ({popularGroup.length})
+                  ⭐ Phổ biến ({popularGroup.length})
                 </Button>
                 
                 <Button
@@ -253,7 +253,7 @@ function App() {
                   }`}
                   onClick={() => setStroke("difficult")}
                 >
-                  🔥 Difficult ({difficultGroup.length})
+                  🔥 Ghi nhớ khó ({difficultGroup.length})
                 </Button>
               </div>
               

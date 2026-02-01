@@ -31,6 +31,7 @@ export const CharacterPage = () => {
   const [imageIndex, setImageIndex] = useState(0);
   const [showAllExamples, setShowAllExamples] = useState({});
   const [zoomedImage, setZoomedImage] = useState(null); // For image popup
+  const [appearsInCharacters, setAppearsInCharacters] = useState(null); // Characters containing this character as component
 
   // Create radical mapping
   const radicalMapping = React.useMemo(() => createRadicalMapping(), []);
@@ -184,6 +185,41 @@ export const CharacterPage = () => {
     }
   }, [radicalMapping]);
 
+  // Fetch characters that contain this character as a component
+  const fetchAppearsIn = useCallback(async (text) => {
+    try {
+      const chars = [...text].filter(ch => /[\u4e00-\u9fff]/.test(ch));
+      if (chars.length === 0) return null;
+      
+      // For each character, get characters that contain it as component
+      const allCharacters = new Set();
+      
+      await Promise.all(
+        chars.map(async (char) => {
+          try {
+            const response = await callApi(`/api/characters-from-component?component=${encodeURIComponent(char)}`);
+            if (response.ok) {
+              const data = await response.json();
+              if (data.characters && data.characters.length > 0) {
+                data.characters.forEach(c => allCharacters.add(c));
+              }
+            }
+          } catch (error) {
+            console.error(`Error fetching appears-in for ${char}:`, error);
+          }
+        })
+      );
+      
+      // Remove the original characters from the result
+      chars.forEach(c => allCharacters.delete(c));
+      
+      return allCharacters.size > 0 ? [...allCharacters] : null;
+    } catch (error) {
+      console.error('Error fetching appears-in:', error);
+      return null;
+    }
+  }, []);
+
   // Load all data
   useEffect(() => {
     if (!character) return;
@@ -199,22 +235,24 @@ export const CharacterPage = () => {
       setRadicalInfo(radicals);
       
       // Fetch all data in parallel
-      const [definition, examples, dictionary, decomposed] = await Promise.all([
+      const [definition, examples, dictionary, decomposed, appearsIn] = await Promise.all([
         fetchCharDefinition(character),
         fetchCharExamples(character),
         fetchDictionaryResults(character),
-        fetchDecomposition(character)
+        fetchDecomposition(character),
+        fetchAppearsIn(character)
       ]);
       
       setCharDefinition(definition);
       setCharExamples(examples);
       setDecomposedRadicals(decomposed);
       setDictionaryResults(dictionary);
+      setAppearsInCharacters(appearsIn);
       setIsLoading(false);
     };
     
     loadData();
-  }, [character, fetchCharDefinition, fetchCharExamples, fetchDictionaryResults, fetchDecomposition, searchRadical]);
+  }, [character, fetchCharDefinition, fetchCharExamples, fetchDictionaryResults, fetchDecomposition, fetchAppearsIn, searchRadical]);
 
   // Check if character contains Chinese characters
   const hasChinese = character && [...character].some(ch => /[\u4e00-\u9fff]/.test(ch));
@@ -488,6 +526,60 @@ export const CharacterPage = () => {
               </div>
             )}
 
+            {/* Appears In - Characters containing this character as component */}
+            {appearsInCharacters && appearsInCharacters.length > 0 && (
+              <div className="bg-white rounded-2xl shadow p-6">
+                <h2 className="text-lg font-semibold text-orange-700 mb-4">
+                  Xuất hiện trong
+                  <span className="text-sm font-normal text-gray-500 ml-2">
+                    ({appearsInCharacters.length} ký tự)
+                  </span>
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {appearsInCharacters.slice(0, 50).map((char, index) => (
+                    <Link
+                      key={index}
+                      to={`/character/${encodeURIComponent(char)}`}
+                      className="inline-block px-3 py-2 bg-orange-50 hover:bg-orange-100 rounded-lg text-2xl font-bold text-orange-800 transition-colors border border-orange-200"
+                    >
+                      {char}
+                    </Link>
+                  ))}
+                  {appearsInCharacters.length > 50 && (
+                    <span className="inline-block px-3 py-2 text-gray-500 text-sm self-center">
+                      +{appearsInCharacters.length - 50} ký tự khác
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Dictionary Results */}
+            {dictionaryResults && Object.keys(dictionaryResults).length > 0 && (
+              <div className="space-y-4">
+                {/* Iterate in order of characters in the search string */}
+                {[...character]
+                  .filter(ch => /[\u4e00-\u9fff]/.test(ch) && dictionaryResults[ch])
+                  .map((char) => {
+                  const results = dictionaryResults[char];
+                  const currentIndex = dictionaryIndices[char] || 0;
+                  
+                  return (
+                    <div key={char} className="bg-white rounded-2xl shadow p-6">
+                      <h2 className="text-lg font-semibold text-purple-700 mb-4">
+                        Từ điển chứa "<Link to={`/character/${encodeURIComponent(char)}`} className="hover:underline">{char}</Link>"
+                      </h2>
+                      <DictionaryCarousel 
+                        dictionaryResults={results}
+                        currentIndex={currentIndex}
+                        onIndexChange={(newIndex) => setDictionaryIndices(prev => ({ ...prev, [char]: newIndex }))}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
             {/* Character Examples - High Frequency Words (like HanziCraft) */}
             {charExamples && Object.keys(charExamples).length > 0 && (
               <div className="space-y-4">
@@ -557,32 +649,6 @@ export const CharacterPage = () => {
                           ))}
                         </div>
                       )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Dictionary Results */}
-            {dictionaryResults && Object.keys(dictionaryResults).length > 0 && (
-              <div className="space-y-4">
-                {/* Iterate in order of characters in the search string */}
-                {[...character]
-                  .filter(ch => /[\u4e00-\u9fff]/.test(ch) && dictionaryResults[ch])
-                  .map((char) => {
-                  const results = dictionaryResults[char];
-                  const currentIndex = dictionaryIndices[char] || 0;
-                  
-                  return (
-                    <div key={char} className="bg-white rounded-2xl shadow p-6">
-                      <h2 className="text-lg font-semibold text-purple-700 mb-4">
-                        Từ điển chứa "<Link to={`/character/${encodeURIComponent(char)}`} className="hover:underline">{char}</Link>"
-                      </h2>
-                      <DictionaryCarousel 
-                        dictionaryResults={results}
-                        currentIndex={currentIndex}
-                        onIndexChange={(newIndex) => setDictionaryIndices(prev => ({ ...prev, [char]: newIndex }))}
-                      />
                     </div>
                   );
                 })}

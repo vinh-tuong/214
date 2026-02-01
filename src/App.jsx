@@ -253,7 +253,7 @@ function App() {
                   }`}
                   onClick={() => setStroke("difficult")}
                 >
-                  🔥 Ghi nhớ khó ({difficultGroup.length})
+                  🔥 Ghi nhớ từ khó ({difficultGroup.length})
                 </Button>
               </div>
               
